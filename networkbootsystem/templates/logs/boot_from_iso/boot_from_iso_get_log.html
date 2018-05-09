@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}查询ISO获取日志{% endblock %}
+
+{% block right %}
+    <section class="content-header">
+        <h1>
+            启动ISO文件日期记录
+            <small>
+                
+            </small>
+        </h1>
+    </section>
+
+
+    <!-- Main content 表格内容-->
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-header">
+                        <h3 class="box-title">只显示最新的20条数据</h3>
+                    </div>
+                    <div class="box-body table-responsive no-padding">
+                        <table class="table table-hover">   
+                            <tr>
+                                <th align="center">创建时间</th>
+                                <th align="center">MAC地址</th>
+                                <th align="center">IP地址</th>
+                                <th align="center">服务代码</th>
+                                <th align="center">获取Http服务器</th>
+                                <th align="center">获取ISO名称</th>
+                                <th align="center">是否获取</th>
+                            </tr>
+
+                            {% for log in iso_get_log %}
+                            <tr
+                                {% if log.get_tag is True %}
+                                    style="background-color:#96FED1;"
+                                {% endif %}
+                            >
+                                <td align="center">{{ log.created }}</td>
+                                <td align="center">
+                                    {{ log.mac }}
+                                </td>
+                                <td align="center">{{ log.ip }}</td>
+                                <td align="center">{{ log.serial }}</td>
+                                <td align="center">{{ log.http_path }}</td>
+                                <td align="center">{{ log.iso_name }}</td>
+                                {% if log.get_tag is True %}
+                                <td align="center">Y(True)</td>
+                                {% else %}
+                                <td align="center">N(False)</td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}    
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+

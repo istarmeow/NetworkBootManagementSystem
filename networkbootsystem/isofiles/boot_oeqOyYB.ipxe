@@ -1,0 +1,124 @@
+#!ipxe
+
+set url http://172.16.66.1:8088/
+
+menu PXE Server
+
+dhcp
+
+goto TEST
+
+# 输入密码进入，防止误操作
+:letsgo
+prompt --key 0x02 --timeout 6000 Press Ctrl-B Continue! && goto passloop0 || exit
+
+:passloop0
+prompt --key c Password: && goto passloop1 || goto passloop0
+
+:passloop1
+prompt --key d Password: && goto passloop2 || goto passloop0
+
+:passloop2
+prompt --key i Password: && goto passloop3 || goto passloop0
+
+:passloop3
+prompt --key t Password: && goto DefaultFromServer || goto passloop0
+
+:TEST
+# 尝试从服务器启动
+:DefaultFromServer
+echo
+echo From Server?
+echo
+
+prompt --key s --timeout 12000 Press 's' to Boot From Network! else Go to Menu: && goto NetBoot || goto Menu
+
+:NetBoot
+prompt --key i --timeout 6000 Default Boot From File! Press 'i' to Boot From ISO: && goto BootISO || goto BootFile
+
+# 从config命令中获取的值，Serial用于dell服务代码获取
+# chain --timeout 2000 http://172.16.66.1:8899/index?mac=${net0/mac}&serial=${serial:uristring} ||
+:BootISO
+chain --timeout 2000 http://172.16.66.66:8899/pxesvr/bootiso?mac=${net0/mac}&serial=${serial:uristring} || reboot
+sleep 15
+
+:BootFile
+echo BootFile || reboot
+sleep 15
+
+
+# 主菜单
+:Menu
+item --gap ==============PXE Server===================
+item menutftp Go to MenuTftp
+item menuhttp Go to MenuHttp
+item clonezilla Boot Clonezilla
+item --gap
+item --gap
+item --gap ===============PXE Other====================
+item shell Shell
+item config Config
+item reboot Reboot
+item exit Exit
+item --gap
+item --gap
+item --gap If you want to start a Clonezilla with a selection, 
+item --gap you can choose Go to MenuHttp, and then select Clonezilla, 
+item --gap so you can choose the fully automated recovery system.
+item --gap
+item --gap Of course, you can also recompile undionly.kpxe 
+item --gap and put it under TFTP in the DHCP configuration. 
+
+choose target && goto ${target}
+
+:shell
+echo Type 'exit' to get the back to the menu
+shell
+set menu-timeout 0
+set submenu-timeout 0
+goto start
+
+:config
+config
+
+:reboot
+reboot
+
+:exit
+exit
+
+:failed
+echo Booting failed, Exit
+goto exit
+
+:clonezilla
+# 启动原生再生龙，进行手动备份恢复
+echo The native Clonezilla will start,  please wait!
+echo
+echo
+echo
+echo
+echo
+echo
+sleep 3
+kernel ${url}/clonezilla/live/vmlinuz
+initrd ${url}/clonezilla/live/initrd.img
+imgargs vmlinuz boot=live union=overlay fetch=${url}/clonezilla/live/filesystem.squashfs username=user hostname=xenial config quiet components noswap edd=on nomodeset nodmraid noeject locales= keyboard-layouts= ocs_live_run="ocs-live-general" ocs_live_extra_param="" ocs_live_batch=no vga=791 ip= net.ifnames=0  splash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1
+boot ||
+echo Fail to boot clonezilla, Exit! && goto exit
+
+:clonezillaTextAuto
+# 全自动恢复镜像，未使用！
+kernel ${boot-url}/clonezilla/live/vmlinuz
+initrd ${boot-url}/clonezilla/live/initrd.img
+imgargs vmlinuz boot=live union=overlay fetch=${boot-url}/clonezilla/live/filesystem.squashfs username=user hostname=wily config quiet components noswap edd=on nomodeset nodmraid noeject locales=en_US.UTF-8 keyboard-layouts=NONE ocs_prerun1="dhclient -v eth0" ocs_prerun2="sleep 2" ocs_prerun3="mount -t cifs  -o user=imagman,password=duoyi //192.168.96.99/images  /home/partimag" ocs_live_run="ocs-live-restore" ocs_live_extra_param="-g auto -scr -p reboot restoredisk Dell3030-Ubuntu sda" ocs_live_batch=yes vga=788 ip= net.ifnames=0  splash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1
+boot ||
+echo Fail to boot clonezilla, Exit! && goto exit
+
+:menutftp
+chain tftp://${next-server}/menu.ipxe ||
+echo Fail to get from tftp, Exit! && goto exit 
+
+:menuhttp
+chain http://172.16.66.1:8088/install.ipxe ||
+echo Fail to get from http, Exit! && goto exit

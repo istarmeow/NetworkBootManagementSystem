@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}题库{% endblock %}
+
+{% block right %}
+
+<style type="text/css">
+		.content img {
+		  max-width: 100%;
+		}
+</style>
+
+
+    <section class="content-header">
+        <h1>
+            题库
+            <small>
+
+            </small>
+        </h1>
+    </section>
+    <!-- Main content 表格内容-->
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <!--<h3 class="box-title">搜索</h3>-->
+
+                        <form method="get" action="{% url 'questionlist' %}" class="form-horizontal" role="form" enctype="multipart/form-data" accept-charset="utf-8">
+                            <div class="form-group">
+                                <!--<label class="col-sm-1 control-label">筛选</label>-->
+                                <div class="col-sm-2">
+                                    <select size="3" name='selectcategory' class="form-control">
+                                        {% for category in category_list %}
+                                        <option>{{ category }}</option>
+                                        {% endfor %}
+                                        <option selected></option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-2">
+                                    <select size="3" name='selectlevel' class="form-control">
+                                        {% for level in level_list %}
+                                        <option>{{ level }}</option>
+                                        {% endfor %}
+                                        <option selected></option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-2">
+                                    <select size="3" name='selectquestiontype' class="form-control">
+                                        {% for questiontype in questiontype_list %}
+                                        <option>{{ questiontype }}</option>
+                                        {% endfor %}
+                                        <option selected></option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-2">
+                                    <p>
+                                        <input type="submit" value="筛选题库" class="btn btn-primary">
+                                    </p>
+                                    <p>
+                                        <a href="{% url 'questionlist' %}" class="btn btn-success">显示全部</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </form>
+
+                        <form method="post" action="{% url 'questionlist' %}">
+                            <div class="input-group input-group-sm" style="width: 150px;">
+                                <input type="text" name="keyword" value="{{ keyword }}" class="form-control pull-right" placeholder="模糊搜索">
+                                <div class="input-group-btn">
+                                    <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+                                </div>
+                            </div>
+                        </form>
+                        <br>
+                        <div>
+                            <a href="{% url 'exportword' %}?choose=普通" target="_top" class="btn btn-primary">导出普通题</a>
+                            <a href="{% url 'exportword' %}?choose=简单" target="_top" class="btn btn-success">导出简单题</a>
+                            <a href="{% url 'exportword' %}?choose=所有普通" target="_top" class="btn btn-primary">导出所有普通题</a>
+                            <a href="{% url 'exportword' %}?choose=所有简单" target="_top" class="btn btn-success">导出所有简单题</a>
+                            {% if file_list is not None %}
+                                {% for file in file_list %}
+                                    {% if '简单' in file %}
+                                        <a href="/static/questionbank/{{ file }}" download="{{ file }}" class="link_button btn btn-success">下载{{ file }}</a>
+                                    {% else %}
+                                        <a href="/static/questionbank/{{ file }}" download="{{ file }}" class="link_button btn btn-primary">下载{{ file }}</a>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                            <a href="{% url 'emptyquestion' %}" target="_top" class="btn btn-warning">清空导出</a>
+
+                        </div>
+
+                    </div>
+                    <div class="box-body">
+                        {% for question in questions %}
+                        <div class="col-md-8">
+                            <h3>{{ question.category }}<small>难度：{{ question.level }}</small></h3>
+                            <h5><b>重点：{{ question.topic }}</b></h5>
+                            <h5>题型：{{ question.questiontype }}</h5>
+                            <a onclick="delcfm('{% url 'questiondel' %}?del_id={{ question.id }}')" target="_top" class="btn btn-warning">删除</a>
+                            <a href="{% url 'questionupdate' %}?update_id={{ question.id }}" target="_top" class="btn btn-primary">编辑</a>
+                            <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">{{ question.text }}</p>
+                        </div>
+
+                        <div class="col-md-4">
+                            <p style="margin-top: 20px;">
+                            {% if question.image %}<img src='{{ question.image.url }}' class="img-responsive" data-action="zoom"/>{% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-8">
+                            答案：<p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">{{ question.answer }}</p>
+                        </div>
+                        <div class="col-md-12">
+                            <div style="border-top:5px solid #d0d0d0;height:1px;"> </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+<script type="text/javascript" src="{% static 'zooming/zooming.js' %}"></script>
+
+{% endblock %}

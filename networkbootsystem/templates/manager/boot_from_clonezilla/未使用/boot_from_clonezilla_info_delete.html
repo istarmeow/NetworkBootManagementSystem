@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}删除完成{% endblock %}
+
+{% block right %}
+    <p>删除完成！</p>
+    <br><br>
+    <p><a href="{% url 'boot_from_clonezilla_info_query_operation' %}" class="link_button">返回查询页</a> </p>
+{% endblock %}

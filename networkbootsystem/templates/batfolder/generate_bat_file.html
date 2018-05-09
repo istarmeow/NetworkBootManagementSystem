@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}共享映射生成{% endblock %}
+
+{% block right %}
+
+    <section class="content-header">
+        <h1>
+            内部共享映射脚本生成
+            <small>
+                
+            </small>
+        </h1>
+    </section>
+
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">生成共享创建脚本</h3>
+                    </div>
+                    <div class="box-body">
+                        <form method="post" action="{% url 'generate_bat_file' %}" class="form-horizontal" role="form">
+                            <div class="form-group">
+                                <label class="col-sm-1 control-label">通行证：</label>
+                                <div class="col-sm-6">
+                                    <input type="text" name="password" value="" placeholder="管理员提供，如果没有不用输入{% if request.session.session_name == 'admin' %}；密码：{{ adminpasswd }}（管理员显示）{% endif %}"  class="form-control" onchange="TextVerifyInput(this.value)">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-1 control-label">文件名：</label>
+                                <div class="col-sm-6">
+                                    <input type="text" name="username" value="" required placeholder="输入需要生成的文件名称"  class="form-control" onchange="TextVerifyInput(this.value)">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-1 control-label"><input type="checkbox" name="seat" value="seat"> 座位： </label>
+                                <div class="col-sm-6">
+                                    <input type="text" name="seat_disk" value="" placeholder="映射盘符，例如 X，可不填，默认使用 S" class="form-control" onchange="TextVerifyDsik(this.value)">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-1 control-label"><input type="checkbox" name="software" value="software"> 软件： </label>
+                                <div class="col-sm-6">
+                                    <input type="text" name="software_disk" value="" placeholder="映射盘符，例如 X，可不填，默认使用 W（需通行证）"  class="form-control" onchange="TextVerifyDsik(this.value)">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-1 control-label"><input type="checkbox" name="bookcd" value="bookcd"> 书籍： </label>
+                                <div class="col-sm-6">
+                                    <input type="text" name="bookcd_disk" value="" placeholder="映射盘符，例如 X，可不填，默认使用 K"  class="form-control" onchange="TextVerifyDsik(this.value)">
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label"></label>
+                                <div class="col-sm-6">
+                                    <input type="submit" value="生成" class="btn btn-success">
+                                    {% if show_download is True %}
+                                        <a href="/static/batfolder/{{ filename }}" download="{{ filename }}" class="link_button btn btn-primary">下载{{ filename }}</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

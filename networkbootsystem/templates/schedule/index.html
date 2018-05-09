@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}排班表{% endblock %}
+
+{% block right %}
+
+{% if schedule_num > 0 %}
+    <section class="content-header">
+        <h1>
+            值班安排
+            <small>
+                <button type="button" class="btn btn-xs " style="background-color:#FFFF37;" title="">今天值班</button>
+                <button type="button" class="btn btn-xs " style="background-color:#84C1FF;">每周例会</button>
+                <button type="button" class="btn btn-xs " style="background-color:#ADADAD;">周末值班</button>
+            </small>
+        </h1>
+    </section>
+    <!-- Main content 表格内容-->
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <!--表格头部，有标题和搜索-->
+                    <div class="box-header">
+                        <h3 class="box-title">说明</h3>
+                        <small>自动标记今天值班信息，显示今天前10天和后20天值班数据；可直接导出Excel表格。</small>
+                        <!--标题及搜索框-->
+                    </div>
+                    <!-- /.box-header 表格数据-->
+                    <div class="box-body table-responsive no-padding">
+                        <table class="table table-hover">
+                            <th align="center">工作日</th>
+                            <th align="center">日期</th>
+                            <th align="center">星期</th>
+                            <th align="center">值班人员</th>
+                            <th align="center">实际值班人员</th>
+                            <th align="center">操作</th>
+                            {% for schedule in show_schedule %}
+                            <tr
+                                {% if schedule.date == today %}
+                                    style="background-color:#FFFF37;"
+                                {% endif %}
+                                {% if schedule.meetduty is True %}
+                                    style="background-color:#84C1FF;"
+                                {% endif %}
+                                {% if schedule.weekendduty is True %}
+                                    style="background-color:#ADADAD;"
+                                {% endif %}
+
+                            >
+                                {% if  schedule.workday is True %}
+                                    <td align="center"><span class="glyphicon glyphicon-ok"></span></td>
+                                {% else %}
+                                    <td align="center"><span class="glyphicon glyphicon-remove"></span></td>
+                                {% endif %}
+                                <!--粗线：border:3px solid #000000;-->
+                                <td align="center">{{ schedule.date }}</td>
+
+                                <td align="center">{{ schedule.week }}</td>
+
+                                <td align="center">
+                                    {% if schedule.staff  is not None %}
+                                        {{ schedule.staff }}
+                                    {% endif %}
+                                </td>
+                                <td align="center">
+                                    {% if schedule.realstaff is not None %}
+                                        {{ schedule.realstaff }}
+                                    {% endif %}
+                                </td>
+                                <td align="center">
+                                    {% if schedule.staff is not None and schedule.date >= today and schedule.realstaff is None %}
+                                        <a href="{% url 'delayonce' %}?date={{ schedule.date }}" class="btn btn-primary btn-xs" title="推迟一次" onclick="operation_confirmation()"><span class="glyphicon glyphicon-share-alt"></span></a>
+                                        <a href="{% url 'exchange' %}?date={{ schedule.date }}" class="btn btn-success btn-xs" title="调换顺序" onclick="operation_confirmation()"><span class="glyphicon glyphicon-random"></span></a>
+                                    {% endif %}
+                                    {% if schedule.realstaff is not None and schedule.staff is not None %}
+                                        <a href="{% url 'delayonce' %}?date={{ schedule.date }}" class="btn btn-primary btn-xs" title="推迟一次" onclick="operation_confirmation()"><span class="glyphicon glyphicon-share-alt"></span></a>
+                                        <a href="{% url 'delexchange' %}?date={{ schedule.date }}" class="btn btn-danger btn-xs" title="删除调换" onclick="operation_confirmation()"><span class="glyphicon glyphicon-remove-circle"></span></a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+
+                            {% endfor %}
+                      </table>
+                    </div>
+                    <!-- 表格底部显示状态 -->
+                    <div class="box-footer">
+                        <br>
+                        {% if request.session.session_name == 'admin' %}
+                            <a href="{% url 'employee_index' %}" class="btn btn-default">值班成员管理</a>
+                            <a href="{% url 'legalday' %}" class="btn btn-default">法定日信息管理</a>
+                            <a href="{% url 'workdayinfo' %}" class="btn btn-default">增加日期数据</a>
+                            <a href="{% url 'createduty' %}" class="btn btn-default">更新值班数据</a>
+                            <br>
+                            <br>
+                        {% endif %}
+                        <a href="{% url 'exportexcel' %}?date={{ date0 }}" class="btn btn-primary">{{ date0v }}</a>
+                        <a href="{% url 'exportexcel' %}?date={{ date1 }}" class="btn btn-success">{{ date1v }}</a>
+                        <a href="{% url 'exportexcel' %}?date={{ date2 }}" class="btn btn-primary">{{ date2v }}</a>
+                        <a href="{% url 'exportexcel' %}?date={{ date3 }}" class="btn btn-primary">{{ date3v }}</a>
+                        <a href="{% url 'emptyfolder' %}" class="btn btn-warning">清空文件夹</a>
+                        <br>
+                        <br>
+                        <br>
+                        {% if schedule_excel is not None %}
+                            {% for excel in schedule_excel %}
+                                <a href="/static/schedule/{{ excel }}" download="{{ excel }}" class="link_button btn btn-info">下载{{ excel }}</a>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% else %}
+    <h3>未找到相关记录！</h3>
+{% endif %}
+
+{% endblock %}
+

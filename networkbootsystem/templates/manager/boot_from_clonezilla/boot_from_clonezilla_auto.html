@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}Clonezilla自动启动信息管理{% endblock %}
+
+{% block right %}
+
+
+    <section class="content-header">
+        <h1>
+            Clonezilla自动启动记录
+            <small>
+                {% if can_find is True %}
+                查询到 {{ find_num }} 条结果！每页最多显示16条
+                {% else %}
+                无查询结果！
+                {% endif %}
+            </small>
+        </h1>
+    </section>
+
+    <!-- Main content 表格内容-->
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <!--表格头部，有标题和搜索-->
+                    <div class="box-header">
+                        <h3 class="box-title">对应启动记录</h3>
+                        <!--标题及搜索框-->
+                        <div class="box-tools">
+                            <form method="post" action="{% url 'boot_from_clonezilla_auto' %}">
+                                <div class="input-group input-group-sm" style="width: 150px;">
+                                    <input type="text" name="keyword" value="{{ keyword }}" class="form-control pull-right" placeholder="模糊搜索">
+                                    <div class="input-group-btn">
+                                        <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+                                    </div>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                    <!-- /.box-header 表格数据-->
+                    <div class="box-body table-responsive no-padding">
+                        <table class="table table-hover">
+                            {% if can_find is True %}
+                            <tr>
+                                <th align="center">功能操作</th>
+                                <th align="center">启动名称</th>
+                                <th align="center">MAC地址</th>
+                                <th align="center">Clonezilla文件地址</th>
+                                <th align="center">Samba镜像服务器</th>
+                                <th align="center">镜像名称</th>
+                                <th align="center">镜像加载路径</th>
+                                <th align="center">恢复硬盘编号</th>
+                                <th align="center">是否启用</th>
+                                <th align="center">更新时间</th>
+                                <!--<th align="center">操作</th>-->
+                            </tr>
+
+
+                            {% for boot_from_clonezilla in boot_from_clonezilla_list %}
+                            <tr>
+                                <td align="center">
+                                    <!--<a href="{% url 'boot_from_clonezilla_auto_update' %}?update_name={{ boot_from_clonezilla.name }}"  target="_top" class="btn btn-primary btn-circle"><i class="glyphicon glyphicon-list"></i></a>-->
+                                    <a href="{% url 'boot_from_clonezilla_auto_update' %}?update_id={{ boot_from_clonezilla.id }}"  target="_top" class="btn btn-primary btn-circle"><i class="glyphicon glyphicon-list"></i></a>
+
+                                    <!--<a onclick="delcfm('{% url 'boot_from_clonezilla_auto_delete' %}?delete_name={{ boot_from_clonezilla.name }}')" target="_top" class="btn btn-warning btn-circle"><i class="glyphicon glyphicon-remove"></i></a>-->
+                                    <a onclick="delcfm('{% url 'boot_from_clonezilla_auto_delete' %}?delete_id={{ boot_from_clonezilla.id }}')" target="_top" class="btn btn-warning btn-circle"><i class="glyphicon glyphicon-remove"></i></a>
+                                </td>
+                                <td >{{ boot_from_clonezilla.name }}</td>
+                                <td align="center">{{ boot_from_clonezilla.mac }}</td>
+                                <td>{{ boot_from_clonezilla.http_server }}</td>
+                                <td>{{ boot_from_clonezilla.samba_server }}</td>
+                                <td>{{ boot_from_clonezilla.image_file }}</td>
+                                <td>{{ boot_from_clonezilla.image_path }}</td>
+                                <td>{{ boot_from_clonezilla.restore_disk }}</td>
+                                {% if  boot_from_clonezilla.available is True %}
+                                    <td align="center"><span class="glyphicon glyphicon-ok"></span></td>
+                                {% else %}
+                                    <td align="center"><span class="glyphicon glyphicon-remove"></span></td>
+                                {% endif %}
+                                <td>{{ boot_from_clonezilla.updated }}</td>
+                                <!--<td align="center">-->
+                                    <!--<a href="{% url 'boot_from_clonezilla_auto_update' %}?update_name={{ boot_from_clonezilla.name }}" target="_top" class="btn btn-info btn-xs">更新</a>-->
+                                    <!--<a href="{% url 'boot_from_clonezilla_auto_delete' %}?delete_name={{ boot_from_clonezilla.name }}" target="_top" onclick="delete_confirmation()" class="btn btn-danger btn-xs">删除</a>-->
+                                <!--</td>-->
+                            </tr>
+                            {% endfor %}
+                            {% endif %}
+                        </table>
+                    </div>
+                    <!-- 表格底部显示状态 -->
+                    <div class="box-footer">
+
+                        {% if show_pages is True %}
+
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination">
+                                        <li>
+                                            <a href="?page=1" aria-label="">
+                                                <span aria-hidden="true">首页</span>
+                                            </a>
+                                        </li>
+                                    {% if boot_from_clonezilla_list.has_previous %}
+                                        <li>
+                                          <a href="?page={{ boot_from_clonezilla_list.previous_page_number }}" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                          </a>
+                                        </li>
+                                    {% endif %}
+
+                                    {%  for pg in boot_from_clonezilla_list.paginator.page_range %}
+                                        {% if boot_from_clonezilla_list.number == pg %}
+                                            <li class="active"><a href="?page={{ pg }}">{{ pg }}</a> </li>
+                                        {% else %}
+                                            <li><a href="?page={{ pg }}">{{ pg }}</a> </li>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    {% if boot_from_clonezilla_list.has_next %}
+                                        <li>
+                                            <a href="?page={{ boot_from_clonezilla_list.next_page_number }}" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                        <li>
+                                            <a href="?page={{ boot_from_clonezilla_list.paginator.num_pages }}" aria-label="">
+                                                <span aria-hidden="true">尾页</span>
+                                            </a>
+                                        </li>
+                                </ul>
+                            </nav>
+
+
+                            <div class="pagination">
+                                <span class="step-links">
+                                    {% if boot_from_clonezilla_list.has_previous %}
+                                        <a href="?page={{ boot_from_clonezilla_list.previous_page_number }}"><<<</a>
+                                    {% endif %}
+
+                                    <span class="current">
+                                        第 {{ boot_from_clonezilla_list.number }} 页，总共 {{ boot_from_clonezilla_list.paginator.num_pages }} 页
+                                    </span>
+
+                                    {% if boot_from_clonezilla_list.has_next %}
+                                        <a href="?page={{ boot_from_clonezilla_list.next_page_number }}">>>></a>
+                                    {% endif %}
+                                </span>
+                            </div>
+
+                        {% endif %}
+
+                        <br>
+                        <br>
+                        <p>{{ delete_status }}</p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+<br>
+<br>
+
+from networkbootsystem.models import BootFromClonezilla,HttpServerList<br>
+
+x = HttpServerList.objects.filter(http_name="192.168.96.25【默认恢复】Clonezilla2.5.2文件目录")<br>
+
+BootFromClonezilla.objects.exclude(http_server=x[0]).update(http_server=x[0])<br>
+
+{% endblock %}

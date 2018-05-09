@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}选择ISO启动控制{% endblock %}
+
+{% block right %}
+    <section class="content-header">
+        <h1>
+            启动ISO文件
+            <small>
+                
+            </small>
+        </h1>
+    </section>
+
+    <!-- Main content 表格内容-->
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-header">
+                        <h3 class="box-title">对应启动记录</h3>
+                    </div>
+                    <div class="box-body table-responsive no-padding">
+                        <form method="post" action="{% url 'select_boot_iso_control' %}">
+                            <table class="table table-hover">                            
+                                <tr>
+                                    <th align="center">功能操作</th>
+                                    <th>选择启动名称</th>
+                                    <th>HTTP服务器地址</th>
+                                    <th>ISO文件名</th>
+                                    <th>是否启用</th>
+                                    <th>更新时间</th>
+                                </tr>
+
+                                {% for boot_select in boot_select_list %}
+                                <tr
+                                    {% if boot_select.available is True %}
+                                        style="background-color:#02C874;"
+                                    {% endif %}
+                                >
+                                    <td align="center">
+                                        <a onclick="delcfm('{% url 'del_iso_select' %}?del_id={{ boot_select.id }}')" target="_top" class="btn btn-warning btn-circle"><i class="glyphicon glyphicon-remove"></i></a>
+                                    </td>
+                                    <td>
+                                        <button type="submit" name="get_select" value="{{ boot_select.name }}" class="btn btn-info btn-circle" title="选中"><i class="glyphicon glyphicon-ok"></i></button>
+                                        {{ boot_select.name }}
+                                    </td>
+                                    <td align="center">{{ boot_select.http_server.http_name  }}</td>
+                                    <td align="center">{{ boot_select.iso_file }}</td>
+                                    <!--<td align="center">{{ boot_select.available }}</td>-->
+                                    {% if  boot_select.available is True %}
+                                        <td align="center"><span class="glyphicon glyphicon-ok"></span></td>
+                                    {% else %}
+                                        <td align="center"><span class="glyphicon glyphicon-remove"></span></td>
+                                    {% endif %}
+                                    <td align="center">{{ boot_select.updated }}</td>
+                                    <!--<td align="center">-->
+                                        <!--<button type="submit" name="get_select" value="{{ boot_select.name }}" onclick="window.location.reload();" class="btn btn-success btn-xs btn-lg active">选中启动</button>-->
+                                    <!--</td>-->
+                                </tr>
+                                {% endfor %}                            
+                            </table>
+                        </form>
+                    </div>
+                       <!-- 表格底部显示状态 -->
+                    <div class="box-footer">
+                        <p>名称中有<b>“WePE”</b>字符有且只能保留一项，该项用于启动方式选择ISO后，自动选择该项</p>
+                        {{ select_status }}
+                        <a href="{% url 'sync_iso_file' %}?ip=192.168.96.20&port=8088&folder=/images" class="btn btn-success" title="同步192.168.96.20:8088的ISO镜像文件，并自动更新到列表，如访问接口出错，或文件未发生改变，列表将不会更新">同步96.20 ISO镜像</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

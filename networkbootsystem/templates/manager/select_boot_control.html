@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load static %}
+
+    
+{% block title %}选择启动控制{% endblock %}
+
+{% block right %}
+    <section class="content-header">
+        <h1>
+            选择启动方式
+            <small>
+                已实现不同用户启动不同功能，请在PXE启动选择时选择相应的名字。
+            </small>
+        </h1>
+    </section>
+
+    <!-- Main content 表格内容-->
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <!--表格头部，有标题和搜索-->
+                    <div class="box-header">
+                        <h3 class="box-title">启动列表</h3>
+                        <!--标题及搜索框-->
+                    </div>
+                    <!-- /.box-header 表格数据-->
+                    <div class="box-body table-responsive no-padding">
+                        <form method="post" action="{% url 'select_boot_control' %}">
+                            <table class="table table-hover">
+                            <tr>
+                                <th align="center">选择名称</th>
+                                <th align="center">选择启动方式</th>
+                                <th align="center">是否启用</th>
+                                <th align="center">更新时间</th>
+                                <!--<th align="center">操作</th>-->
+                            </tr>
+                            {% for boot_select in boot_select_list %}
+                            <tr
+                                {% if boot_select.available is True %}
+                                    style="background-color:#02C874;"
+                                {% endif %}
+                            >
+                                <td>
+                                    <button type="submit" name="get_select" value="{{ boot_select.boot_name }}" class="btn btn-info btn-circle"><i class="glyphicon glyphicon-ok"></i></button>
+                                    {{ boot_select.name }}
+                                </td>
+                                <td align="center">{{ boot_select.boot_name }}</td>
+                                <!--<td align="center">{{ boot_select.available }}</td>-->
+
+                                {% if boot_select.available is True %}
+                                    <td align="center"><span class="glyphicon glyphicon-ok"></span></td>
+                                {% else %}
+                                    <td align="center"><span class="glyphicon glyphicon-remove"></span></td>
+                                {% endif %}
+
+                                <td align="center">{{ boot_select.updated }}</td>
+                                <!--<td align="center">-->
+                                    <!--&lt;!&ndash;<button type="submit" name="get_select" value="{{ boot_select.boot_name }}" class="btn btn-success btn-xs btn-lg active">选中启动</button>&ndash;&gt;-->
+                                    <!--<button type="submit" name="get_select" value="{{ boot_select.boot_name }}" class="btn btn-info btn-circle"><i class="glyphicon glyphicon-ok"></i></button>-->
+                                <!--</td>-->
+                            </tr>
+                            {% endfor %}
+                        </table>
+                        </form>
+                    </div>
+                    <!-- 表格底部显示状态 -->
+                    <div class="box-footer">
+                        <a href="{% url 'select_default_image_control' %}" class="btn btn-primary">跳转Clonezilla启动选择</a>
+                        <a href="{% url 'select_boot_iso_control' %}" class="btn btn-success">跳转ISO启动选择</a><br>
+                        {{ select_status }}
+                        {{ info }}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}

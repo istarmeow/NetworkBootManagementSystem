@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}题库编辑{% endblock %}
+{% block right %}
+<link rel="stylesheet" href="{% static 'fileinput/fileinput.css' %}">
+
+<script type="text/javascript" src="{% static 'fileinput/fileinput.js' %}"></script>
+<script type="text/javascript" src="{% static 'fileinput/locales/zh.js' %}"></script>
+
+<section class="content-header">
+    <h1>
+        编辑考题
+        <small>
+            {{ status }}
+        </small>
+    </h1>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <h3 class="box-title">编辑考题</h3>
+                </div>
+                <!-- /.box-header -->
+
+                <div class="box-body">
+                    <form method="post" action="{% url 'questionupdate' %}" class="form-horizontal" role="form" enctype="multipart/form-data" accept-charset="utf-8">
+                        <div class="form-group">
+                            <input type="text" name="update_id" value="{{ update_question.id }}" readonly style="display:none">
+                            <label class="col-sm-1 control-label">选择分类</label>
+                            <div class="col-sm-2">
+                                <select name='selectcategory' class="form-control">
+                                    {% for category in category_list %}
+                                    <option
+                                    {% if update_question.category == category %}
+                                     selected
+                                    {% endif %}
+                                    >{{ category }}</option>
+                                    {% endfor %}
+                                    <option></option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3">
+                                <input name="inputcategory" type="text" class="form-control" placeholder="如果没有分类手动输入">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label">难易程度</label>
+                            <div class="col-sm-2">
+                                <select name='selectlevel' class="form-control">
+                                    <option
+                                    {% if update_question.level == "简单" %}
+                                     selected
+                                    {% endif %}
+                                    >简单</option>
+                                    <option
+                                    {% if update_question.level == '普通' %}
+                                     selected
+                                    {% endif %}
+                                    >普通</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-2">
+                                简单适合毕业一年内、普通适合毕业一年后
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label">选择题型</label>
+                            <div class="col-sm-2">
+                                <select name='selectquestiontype' class="form-control">
+                                    {% for questiontype in questiontype_list %}
+                                    <option
+                                    {% if update_question.questiontype == questiontype %}
+                                     selected
+                                    {% endif %}
+                                    >{{ questiontype }}</option>
+                                    {% endfor %}
+                                    <option></option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3">
+                                <input name="inputquestiontype" type="text" class="form-control" placeholder="如果没有题型手动输入">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label">考察重点</label>
+                            <div class="col-sm-5">
+                                <input name="topic" type="text" value='{{ update_question.topic }}' class="form-control" required placeholder="输入考察项目，不用加序号">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label">题目内容</label>
+                            <div class="col-sm-6">
+                                <textarea name='text' class="form-control col-xs-6" rows="6" required placeholder="输入题目内容，不用加序号">{{ update_question.text }}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label">上传图片</label>
+                            <div class="col-sm-6">
+                                <input type="file" class="form-control" name="image" title="图片选择">未上传图片将直接使用原图
+                                <br>
+                                <!--图片链接：{{ update_question.image }}-->
+                                {% if update_question.image %}<img src='{{ update_question.image.url }}'/>{% endif %}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label">参考答案</label>
+                            <div class="col-sm-6">
+                                <textarea name='answer' class="form-control col-xs-6" rows="3" required placeholder="输入答案">{{ update_question.answer }}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label"></label>
+                            <div class="col-sm-10">
+                                <input type="submit" value="提交更新" onclick="operation_confirmation()" class="btn btn-primary">
+                                <a href="{% url 'questionlist' %}" class="btn btn-success">返回题库</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+	<script>
+    $('#file-zh').fileinput({
+        language: 'zh',
+        uploadUrl: '#',
+        allowedFileExtensions : ['jpg', 'png','gif'],
+    });
+    </script>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}更新自动启动信息{% endblock %}
+
+{% block right %}
+    <section class="content-header">
+        <h1>
+            更新自动启动信息
+            <small>
+                
+            </small>
+        </h1>
+    </section>
+
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">修改对应信息</h3>
+                    </div>
+                    <div class="box-body">
+                        <form method="post" action="{% url 'boot_from_clonezilla_auto_update' %}">
+                            <p>
+                                <!--不显示的唯一id，用于提交表单后对比前后是否变化-->
+                                <input type="text" name="id" value="{{ update_name.id }}" readonly style="display:none">
+                            </p>
+                            <p>
+                                <label>启动名称：</label>
+                                <input type="text" name="name" value="{{ update_name.name }}" required placeholder="输入这项的名称，便于识别！" class="form-control" onchange="TextVerifyInput(this.value)">
+                            </p>
+                            <p>
+                                <label>MAC地址：</label>
+                                <input type="text" name="mac" value="{{ update_name.mac }}" readonly class="form-control">
+                            </p>
+
+                            <p>
+                                <label>Clonezilla文件地址：</label>
+                                <select name="http_server" class="form-control">
+                                    {% for http_server in http_server_list %}
+                                        <option value ="{{ http_server.http_name }}" {% if update_name.http_server.http_name == http_server.http_name %} selected="selected" {% endif %}>{{ http_server.http_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </p>
+                            <p>
+                                <label>Samba镜像服务器：</label>
+                                <select name="samba_server" class="form-control">
+                                    {% for samba_server in samba_server_list %}
+                                        <option value ="{{ samba_server.samba_name }}" {% if update_name.samba_server.samba_name == samba_server.samba_name %} selected="selected" {% endif %}>{{ samba_server.samba_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </p>
+                            <p>
+                                <label>镜像名称：</label>
+                                <select name="image_file" class="form-control">
+                                    {% for image_file in image_file_list %}
+                                        <option value="{{ image_file.name }}" {% if update_name.image_file.name == image_file.name %} selected="selected" {% endif %}>{{ image_file.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </p>
+                            <p>
+                                <label>镜像加载路径：</label>
+                                <input type="text" name="image_path" value="{{ update_name.image_path }}" required placeholder="" class="form-control">
+                            </p>
+                            <p>
+                                <label>恢复硬盘编号：</label>
+                                <select name="restore_disk" class="form-control">
+                                    {% for restore_disk in restore_disk_list %}
+                                        <option value="{{ restore_disk.disk_name }}" {% if update_name.restore_disk.disk_name == restore_disk.disk_name %} selected="selected" {% endif %}>{{ restore_disk.disk_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </p>
+                            <p>
+                                <label>选择可用：</label>
+                                <input type="radio" name="available" value="y" {% if update_name.available is True %} checked="checked" {% endif %}/>是
+                                <input type="radio" name="available" value="n" {% if update_name.available is False %} checked="checked" {% endif %}/>否
+                            </p>
+                            <p>
+                                <label>使用日志：</label>
+                                <!--<input name="explain" value="{{ update_name.explain }}" class="form_data" style="width:504px; height:60px; margin-top: 20px" >-->
+                                <textarea name="explain" value="{{ update_name.explain }}" rows="13"  readonly class="form-control">{{ update_name.explain }}</textarea>
+                            </p>
+
+                            <input type="submit" value="更新自动启动信息" onclick="operation_confirmation()" class="btn btn-success">
+                            <a href="{% url 'boot_from_clonezilla_auto' %}" class="btn btn-default">返回查询页</a>
+                        </form>
+                        <p>{{ update_status }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

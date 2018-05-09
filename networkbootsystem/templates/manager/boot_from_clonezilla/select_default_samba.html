@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}Samba控制管理{% endblock %}
+
+{% block right %}
+
+    <section class="content-header">
+        <h1>
+            Samba服务器管理
+            <small>
+                {% if can_find is True %}
+                查询到 {{ find_num }} 条结果！
+                {% else %}
+                无查询结果！
+                {% endif %}
+            </small>
+        </h1>
+    </section>
+    <!-- Main content 表格内容-->
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <form method="post" action="{% url 'select_default_samba' %}">
+                        <!--表格头部，有标题和搜索-->
+                        <div class="box-header">
+                            <h3 class="box-title">Samba</h3>
+                            <!--标题及搜索框-->
+                            <div class="box-tools">
+
+                                    <div class="input-group input-group-sm" style="width: 150px;">
+                                        <input type="text" name="keyword" value="{{ keyword }}" class="form-control pull-right" placeholder="模糊搜索">
+                                        <div class="input-group-btn">
+                                            <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+                                        </div>
+                                    </div>
+
+
+                            </div>
+                        </div>
+                        <!-- /.box-header 表格数据-->
+                        <div class="box-body table-responsive no-padding">
+                            <table class="table table-hover">
+                                {% if can_find is True %}
+                                <!--当有查询结果才显示-->
+                                <tr>
+                                    <th>功能操作</th>
+                                    <th>Samba服务器名称</th>
+                                    <th>Samba服务器IP</th>
+                                    <th>镜像目录</th>
+                                    <th>服务器用户</th>
+                                    <th>服务器密码</th>
+                                    <th>测速Http服务器端口</th>
+                                    <th>测速网速获取地址</th>
+                                    <th>是否启用</th>
+                                    <th>是否默认</th>
+                                    <!--<th>更新时间</th>-->
+                                    <!--<th>操作</th>-->
+                                </tr>
+
+                                {% for samba_select in samba_select_list %}
+                                <tr
+                                    {% if samba_select.default is True %}
+                                        style="background-color:#02C874; height:30px"
+                                    {% else %}
+                                        style="height:30px;"
+                                    {% endif %}
+                                >
+                                    <td align="center">
+                                        <!--<button type="submit" name="get_select" value="{{ samba_select.samba_name }}" class="btn btn-info btn-circle"><i class="glyphicon glyphicon-ok"></i></button>-->
+                                        <a href="{% url 'select_default_samba_update' %}?update_samba_name={{ samba_select.samba_name }}"  target="_top" class="btn btn-primary btn-circle"><i class="glyphicon glyphicon-list"></i></a>
+                                        <a onclick="delcfm('{% url 'select_default_samba_delete' %}?delete_samba_name={{ samba_select.samba_name }}')" target="_top" class="btn btn-warning btn-circle"><i class="glyphicon glyphicon-remove"></i></a>
+                                    </td>
+                                    <td>
+                                        <button type="submit" name="get_select" value="{{ samba_select.samba_name }}" class="btn btn-info btn-circle"><i class="glyphicon glyphicon-ok"></i></button>
+                                        {{ samba_select.samba_name }}
+                                    </td>
+                                    <td align="center">{{ samba_select.samba_ip }}</td>
+                                    <td align="center">{{ samba_select.samba_folder }}</td>
+                                    <td align="center">{{ samba_select.samba_user }}</td>
+                                    <td align="center">{{ samba_select.samba_password }}</td>
+                                    <td align="center">{{ samba_select.netspeed_port }}</td>
+                                    <td align="center">{{ samba_select.netspeed_path }}</td>
+                                    <!--<td align="center">{{ samba_select.available }}</td>-->
+                                    <!--<td align="center">{{ samba_select.default }}</td>-->
+
+                                    {% if samba_select.available is True %}
+                                        <td align="center"><span class="glyphicon glyphicon-ok"></span></td>
+                                    {% else %}
+                                        <td align="center"><span class="glyphicon glyphicon-remove"></span></td>
+                                    {% endif %}
+
+                                    {% if samba_select.default is True %}
+                                        <td align="center"><span class="glyphicon glyphicon-ok"></span></td>
+                                    {% else %}
+                                        <td align="center"><span class="glyphicon glyphicon-remove"></span></td>
+                                    {% endif %}
+
+                                    <!--<td align="center">{{ samba_select.updated }}</td>-->
+                                    <!--<td align="center">-->
+                                        <!--<button type="submit" name="get_select" value="{{ samba_select.samba_name }}" class="btn btn-success btn-xs btn-lg active">选中启动</button>-->
+                                        <!--<a href="{% url 'select_default_samba_update' %}?update_samba_name={{ samba_select.samba_name }}" class="btn btn-info btn-xs" target="_top" >更新</a>-->
+                                        <!--<a href="{% url 'select_default_samba_delete' %}?delete_samba_name={{ samba_select.samba_name }}" target="_top" onClick="delete_confirmation()" class="btn btn-danger btn-xs">删除</a>-->
+                                    <!--</td>-->
+
+                                </tr>
+                            {% endfor %}
+
+                                {% endif %}
+                          </table>
+                        </div>
+                        <!-- 表格底部显示状态 -->
+                        <div class="box-footer">
+                            <p>{{ delete_status }}</p>
+                            <p>{{ switch_status }}</p>
+
+                            <br>
+                            <p><a href="{% url 'select_default_samba_add' %}" class="link_button btn btn-primary">增加其他Samba服务器</a></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}

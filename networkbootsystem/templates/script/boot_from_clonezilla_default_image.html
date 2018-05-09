@@ -1,0 +1,4 @@
+#!ipxe
+kernel {{ http_svr }}/clonezilla/live/vmlinuz initrd=initrd.img boot=live union=overlay fetch={{ http_svr }}/clonezilla/live/filesystem.squashfs username=user hostname=xenial config quiet components noswap edd=on nomodeset nodmraid noeject locales= keyboard-layouts= ocs_live_run="ocs-live-general" ocs_live_extra_param="" ocs_live_batch=no vga=791 ip= net.ifnames=0  splash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1
+initrd {{ http_svr }}/clonezilla/live/initrd.img
+boot

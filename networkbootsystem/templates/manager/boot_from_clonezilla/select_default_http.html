@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}Http控制管理{% endblock %}
+
+{% block right %}
+    <section class="content-header">
+        <h1>
+            Http控制管理
+            <small>
+                {% if can_find is True %}
+                查询到 {{ find_num }} 条结果！
+                {% else %}
+                无查询结果！
+                {% endif %}
+            </small>
+        </h1>
+    </section>
+
+    <!-- Main content 表格内容-->
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <!--表格头部，有标题和搜索-->
+                    <div class="box-header">
+                        <h3 class="box-title">Http列表</h3>
+                        <!--标题及搜索框-->
+                    </div>
+                    <!-- /.box-header 表格数据-->
+                    <div class="box-body table-responsive no-padding">
+                        <table class="table table-hover">
+                            {% if can_find is True %}
+                            <!--当有查询结果才显示-->
+                            <tr>
+                                <th>功能操作</th>
+                                <th>http服务器名称</th>
+                                <th>http服务器IP</th>
+                                <th>Http服务器端口</th>
+                                <th>文件目录</th>
+                                <th>是否启用</th>
+                                <th>是否默认</th>
+                                <!--<th>更新时间</th>-->
+                            </tr>
+                            {% for http_select in http_select_list %}
+                            <tr
+                                {% if http_select.default is True %}
+                                    style="background-color:#02C874; height:30px"
+                                {% else %}
+                                    style="height:30px;"
+                                {% endif %}
+                            >
+                                <td align="center">
+                                    <!--<a href="{% url 'select_default_http' %}?choose={{ http_select.http_name }}" class="btn btn-info btn-circle" title="选中"><i class="glyphicon glyphicon-ok"></i></a>-->
+                                    <a href="{% url 'select_default_http' %}?update={{ http_select.http_name }}"  target="_top" class="btn btn-primary btn-circle"><i class="glyphicon glyphicon-list"></i></a>
+                                    <a onclick="delcfm('{% url 'select_default_http' %}?delete={{ http_select.http_name }}')" target="_top" class="btn btn-warning btn-circle"><i class="glyphicon glyphicon-remove"></i></a>
+                                </td>
+                                <td>
+                                    <a href="{% url 'select_default_http' %}?choose={{ http_select.http_name }}" class="btn btn-info btn-circle" title="选中"><i class="glyphicon glyphicon-ok"></i></a>
+                                    {{ http_select.http_name }}
+                                </td>
+                                <td align="center">{{ http_select.http_ip }}</td>
+                                <td align="center">{{ http_select.http_port }}</td>
+                                <td align="center">{{ http_select.http_folder }}</td>
+                                <!--<td align="center">{{ http_select.available }}</td>-->
+                                <!--<td align="center">{{ http_select.default }}</td>-->
+
+                                {% if http_select.available is True %}
+                                    <td align="center"><span class="glyphicon glyphicon-ok"></span></td>
+                                {% else %}
+                                    <td align="center"><span class="glyphicon glyphicon-remove"></span></td>
+                                {% endif %}
+
+                                {% if http_select.default is True %}
+                                    <td align="center"><span class="glyphicon glyphicon-ok"></span></td>
+                                {% else %}
+                                    <td align="center"><span class="glyphicon glyphicon-remove"></span></td>
+                                {% endif %}
+
+                                <!--<td align="center">{{ http_select.updated }}</td>-->
+
+                            </tr>
+                            {% endfor %}
+
+                            {% endif %}
+                      </table>
+                    </div>
+                    <!-- 表格底部显示状态 -->
+                    <div class="box-footer">
+                        <h4>Tip：http服务器名称中，<b>‘默认备份’</b>字段使用的是默认Clonezilla，<b>‘默认恢复’</b>使用修改后的Clonezilla，<b>‘自动硬盘选择’</b>字段使用自动选择硬盘恢复的Clonezilla</h4>
+                        <br>
+                        <br>
+                        <p>{{ delete_status }}</p>
+                        <p>{{ switch_status }}</p>
+
+                        <br>
+                        <p><a href="{% url 'select_default_http' %}?add=true" class="link_button btn btn-primary">增加其他Http服务器</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}

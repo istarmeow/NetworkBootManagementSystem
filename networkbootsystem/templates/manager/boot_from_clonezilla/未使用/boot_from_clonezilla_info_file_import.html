@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}详情页{% endblock %}
+
+{% block right %}
+    <form action="{% url 'boot_from_clonezilla_info_file_import' %}" method="post" enctype="multipart/form-data" class="input_p">
+        配置文件:
+            <input name="file_upload" value="" type="file">
+
+        <input type="submit" value="配置文件上传" class="submit_button">
+    </form>
+    {{ upload_status }}
+{% endblock %}

@@ -1,0 +1,486 @@
+{% extends "base.html" %}
+{% load static %}
+
+    
+{% block title %}用户管理{% endblock %}
+
+{% block right %}
+<script type="text/javascript">
+
+//以下代码控制按钮切换效果
+
+$(function(){
+
+  $('.btn-toggle').click(function(){
+    var $this = $(this); //找到当前btn-toggle定义的按钮组
+
+    //这段代码中找到对应的btn-primary定义的按钮并且去掉相关CSS类定义
+    if($this.find('.btn-primary').length>0){
+      $this.find('.btn').toggleClass('btn-primary');
+    }
+
+    //下面添加其它按钮CSS定义支持
+    if($this.find('.btn-success').length>0){
+      $this.find('.btn').toggleClass('btn-success');
+    }
+
+    if($this.find('.btn-info').length>0){
+      $this.find('.btn').toggleClass('btn-info');
+    }
+
+    if($this.find('.btn-danger').length>0){
+      $this.find('.btn').toggleClass('btn-danger');
+    }
+
+    /*
+     *  这里我们可以修改btn定义不同的切换按钮样式：danger,info,success,primary
+     */
+
+    $this.find('.btn').toggleClass('btn-default').toggleClass('active');
+
+  });
+
+});
+
+
+
+function showHint(str) {
+    var xmlhttp;
+    if (str.replace(/(^\s*)|(\s*$)/g, "").length == 0) {  // 去掉左右两端的空格
+        document.getElementById("txtHint").innerHTML = "";
+        return;
+    }
+    if (window.XMLHttpRequest) { // code for IE7+, Firefox, Chrome, Opera, Safari
+        xmlhttp = new XMLHttpRequest();
+    } else { // code for IE6, IE5
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+            document.getElementById("txtHint").innerHTML = xmlhttp.responseText;
+        }
+    }
+    xmlhttp.open("GET", "/user/user_list_json?keyword=" + str, true);
+    xmlhttp.send();
+}
+    
+
+
+showUserList();
+//显示用户列表  
+function showUserList() { 
+    $.ajax({
+        url: '/user/user_list_json',
+        type: 'GET',
+        dataType: 'json',
+        timeout: 3000,
+        cache: false,
+//        beforeSend: LoadFunction, //加载执行方法
+        error: erryFunction,  //错误执行方法
+        success: succFunction //成功执行方法
+    })
+    
+    function LoadFunction() {
+        $("#user_list").html('');
+    }
+    function erryFunction() {
+        alert("获取用户错误！");
+    }
+
+    function succFunction(user_list_json) {
+//        alert(user_list_json)
+        var json = eval(user_list_json); //数组
+          
+        var user_list_json = '\
+        <table class="table table-striped">\
+            <tread>\
+                <tr>\
+                    <th align="center">用户名</th>\
+                    <th align="center">查找权限</th>\
+                    <th align="center">增加权限</th>\
+                    <th align="center">删除权限</th>\
+                    <th align="center">更新权限</th>\
+                    <th align="center">启动方式</th>\
+                    <th align="center">Clonezilla选择ID</th>\
+                    <th align="center">ISO选择ID</th>\
+                </tr>\
+            </tread>\
+            <tbody>';
+        $.each(json, function (index, object) {
+            //循环获取数据
+//                    alert('数据编号：' + index);
+
+            var username = object.fields.username;
+
+//            增加启动方式2017.10.22
+            var boot_select = object.fields.boot_select;
+            var boot_clonezilla_id = object.fields.boot_clonezilla_id;
+            var boot_iso_id = object.fields.boot_iso_id;
+
+            var btn = 'class="btn btn-default btn-xs"'
+            var btnact = 'class="btn btn-primary btn-xs active"'
+            var auth_search = object.fields.auth_search;     
+            if (auth_search=='1'){
+                style_search_on=btnact;
+                style_search_off=btn;
+            }
+            else {
+                style_search_on=btn;
+                style_search_off=btnact;
+            }
+            var auth_add = object.fields.auth_add;
+            if (auth_add=='1'){
+                style_add_on=btnact;
+                style_add_off=btn;
+            }
+            else {
+                style_add_on=btn;
+                style_add_off=btnact;
+            }
+            var auth_del = object.fields.auth_del;
+            if (auth_del=='1'){
+                style_del_on=btnact;
+                style_del_off=btn;
+            }
+            else {
+                style_del_on=btn;
+                style_del_off=btnact;
+            }
+            var auth_update = object.fields.auth_update;
+            if (auth_update=='1'){
+                style_update_on=btnact;
+                style_update_off=btn;
+            }
+            else {
+                style_update_on=btn;
+                style_update_off=btnact;
+            }
+
+            user_list_json += '<tr><td align="center" id=username>' + username + '</td>' +
+                '<td align="center">' +
+                    '<div class="btn-group btn-toggle">' + 
+                        '<button name="auth_search_on" onclick="switchAuthOnclick(\'' + username + '\',this.name)"' + style_search_on + '>ON</button>' +
+                        '<button name="auth_search_off" onclick="switchAuthOnclick(\'' + username + '\',this.name)"' + style_search_off + '>OFF</button>' +
+                    '</div>' +
+                '</td>' +
+                '<td align="center">' +
+                    '<div class="btn-group btn-toggle">' + 
+                        '<button name="auth_add_on" onclick="switchAuthOnclick(\'' + username + '\',this.name)"' + style_add_on + '>ON</button>' +
+                        '<button name="auth_add_off" onclick="switchAuthOnclick(\'' + username + '\',this.name)"' + style_add_off + '>OFF</button>' +
+                    '</div>' +
+                '</td>' +
+                '<td align="center">' +
+                    '<div class="btn-group btn-toggle">' + 
+                        '<button name="auth_del_on" onclick="switchAuthOnclick(\'' + username + '\',this.name)"' + style_del_on + '>ON</button>' +
+                        '<button name="auth_del_off" onclick="switchAuthOnclick(\'' + username + '\',this.name)"' + style_del_off + '>OFF</button>' +
+                    '</div>' +
+                '</td>' +
+                '<td align="center">' +
+                    '<div class="btn-group btn-toggle">' + 
+                        '<button name="auth_update_on" onclick="switchAuthOnclick(\'' + username + '\',this.name)"' + style_update_on + '>ON</button>' +
+                        '<button name="auth_update_off" onclick="switchAuthOnclick(\'' + username + '\',this.name)"' + style_update_off + '>OFF</button>' +
+                    '</div>' +
+                '</td>' +
+                '<td align="center" id=boot_select>' + boot_select + '</td>' +
+                '<td align="center" id=boot_clonezilla_id>' + boot_clonezilla_id + '</td>' +
+                '<td align="center" id=boot_iso_id>' + boot_iso_id + '</td>' +
+                '</tr>'
+                
+        });
+
+        user_list_json += "\
+            </tbody>\
+        </table>";
+
+        $("#user_list").html('');
+        $("#user_list").html(user_list_json);
+
+    } 
+}    
+    
+//更改用户列表的权限
+function switchAuthOnclick(username, authname){    
+//    alert(auth + name);
+    $.ajax({        
+        type: "POST",      //data 传送数据类型。post 传递
+        dataType: 'text',  // 返回数据的数据类型text
+        url: "/user/switch_user_auth", 
+        cache: false,      
+        data: {
+            authname: authname,
+            username: username,
+        },  //传送的数据
+        error: errorFunc,
+        success: successFunc,
+        complete: completeFunc,
+        }) 
+    
+        function errorFunc(){
+            alert("数据传输错误");
+        };
+        function successFunc(message) {
+            alert(message);
+        };
+        function completeFunc(){
+//            alert('请求完成后，执行显示用户列表的函数');
+            showUserList();
+        };
+}
+
+//显示申请权限的用户列表
+function showUserApplyList() {
+    $.ajax({        
+        url: '/user/show_user_apply_permissions',
+        type: 'GET',
+        dataType: 'json',
+        timeout: 3000,
+        cache: false,
+    //        beforeSend: LoadFunction, //加载执行方法
+        error: errorFunc,  //错误执行方法
+        success: successFunc //成功执行方法
+    })
+    function errorFunc(){
+        alert('获取信息错误');
+    }
+    function successFunc(userapply){
+        if(userapply!=''){
+            var apply=eval(userapply);
+
+            var userapplylist = '\
+            <table class="table table-striped">\
+                <tread>\
+                    <tr>\
+                        <th align="center">用户名</th>\
+                        <th align="center">查找权限</th>\
+                        <th align="center">增加权限</th>\
+                        <th align="center">删除权限</th>\
+                        <th align="center">更新权限</th>\
+                        <th align="center">操作</th>\
+                    </tr>\
+                </tread>\
+                <tbody>';
+            $.each(apply, function (index, object) {
+                //循环获取数据
+    //                    alert('数据编号：' + index);
+
+                var username = object.fields.username;
+
+                var btn = 'class="btn btn-default btn-xs"'
+                var btnact = 'class="btn btn-primary btn-xs active"'
+                var auth_search = object.fields.auth_search;     
+                if (auth_search=='1'){
+                    check_search = 'checked';
+                }
+                else {
+                    check_search='';
+                }
+                var auth_add = object.fields.auth_add;
+                if (auth_add=='1'){
+                    check_add = 'checked';
+                }
+                else {
+                    check_add='';
+                }
+                var auth_del = object.fields.auth_del;
+                if (auth_del=='1'){
+                    check_del = 'checked';
+                }
+                else {
+                    check_del='';
+                }
+                var auth_update = object.fields.auth_update;
+                if (auth_update=='1'){
+                    check_update = 'checked';
+                }
+                else {
+                    check_update='';
+                }
+
+                userapplylist += '<tr><td align="center" id=usernameCheck>' + username + '</td>' +
+                    '<td align="center">' +
+                        '<input class="checkbox" type="checkbox" name="auth_searchCheck" value=' + auth_search + ' ' + check_search + '/>' +
+                    '</td>' +
+                    '<td align="center">' +
+                        '<input type="checkbox" name="auth_addCheck" value=' + auth_add + ' ' + check_add + '/>' +
+                    '</td>' +
+                    '<td align="center">' +
+                        '<input type="checkbox" name="auth_delCheck" value=' + auth_del + ' ' + check_del + '/>'  +
+                    '</td>' +
+                    '<td align="center">' +
+                        '<input type="checkbox" name="auth_updateCheck" value=' + auth_update + ' ' + check_update + '/>' +
+                    '</td>' +
+                    '<td align="center">' +
+                    '<button type="button" class="btn btn-success btn-xs btn-lg active" \
+                    onclick="adoptApply(document.getElementById(\'usernameCheck\').innerHTML, document.getElementsByName(\'auth_searchCheck\')[0].checked, document.getElementsByName(\'auth_addCheck\')[0].checked, document.getElementsByName(\'auth_delCheck\')[0].checked, document.getElementsByName(\'auth_updateCheck\')[0].checked)">通过</button>' +
+                    '<button type="button" class="btn btn-danger btn-xs" onclick="refuseApply(document.getElementById(\'usernameCheck\').innerHTML)">拒绝</button>' +
+                    '</td>' +    
+                    '</tr>'
+                });
+
+            userapplylist += '\
+                </tbody>\
+            </table>';
+
+            $("#userapplylist").html('');
+            $("#userapplylist").html(userapplylist);
+        }
+       
+        else{
+            $("#userapplylist").html('暂无用户权限申请');
+        }
+    }
+}
+    
+//通过权限申请
+function adoptApply(username, auth_search, auth_add, auth_del, auth_update){
+    if(auth_search==true){
+        auth_search='1';
+    }
+    else{
+        auth_search='0';
+    }
+    if(auth_add==true){
+        auth_add='1';
+    }
+    else{
+        auth_add='0';
+    }
+    if(auth_del==true){
+        auth_del='1';
+    }
+    else{
+        auth_del='0';
+    }
+    if(auth_update==true){
+        auth_update='1';
+    }
+    else{
+        auth_update='0';
+    }
+    
+//    alert(username+auth_seach+auth_add+auth_del+auth_update)  
+    $.ajax({        
+    type: "POST",      //data 传送数据类型。post 传递
+    dataType: 'text',  // 返回数据的数据类型text
+    url: "/user/adopt_user_apply", 
+    cache: false,      
+    data: {
+        username: username,
+        auth_search: auth_search,
+        auth_add: auth_add,
+        auth_del: auth_del,
+        auth_update: auth_update
+    },  //传送的数据
+    error: errorFunc,
+    success: successFunc,
+    complete: completeFunc,
+    }) 
+
+    function errorFunc(){
+        alert("数据传输错误");
+    }
+    function successFunc(message) {
+        alert(message);
+    }
+    function completeFunc(){
+//            alert('请求完成后，显示用户申请权限的列表');
+        showUserApplyList();
+        showUserList();
+    }
+}
+    
+//拒绝权限申请
+function refuseApply(username){
+    $.ajax({        
+    type: "POST",      //data 传送数据类型。post 传递
+    dataType: 'text',  // 返回数据的数据类型text
+    url: "/user/refuse_user_apply", 
+    cache: false,      
+    data: {
+        username: username,
+    },  //传送的数据
+    error: errorFunc,
+    success: successFunc,
+    complete: completeFunc,
+    }) 
+
+    function errorFunc(){
+        alert("数据传输错误");
+    }
+    function successFunc(message) {
+        alert(message);
+    }
+    function completeFunc(){
+//            alert('请求完成后，显示用户申请权限的列表');
+        showUserApplyList();
+        showUserList();
+    }
+}
+    
+</script>
+
+<!--
+<form method="post" action="{% url 'user_management' %}" class="form-inline" role="form">
+    <table class="table table-striped">
+        <tread>
+            <tr>
+                <th align="center">用户名</th>
+                <th align="center">查找权限</th>
+                <th align="center">增加权限</th>
+                <th align="center">删除权限</th>
+                <th align="center">更新权限</th>
+            </tr>
+        </tread>
+        <tbody>
+        {% for user in user_list %}
+            <tr>
+                <td align="center">{{ user.username }}</td>
+                <td align="center">{{ user.auth_search }}
+                <div class="btn-group btn-toggle">
+                    <button name="auth_switch" value="y" {% if user.auth_search == '1' %} class="btn btn-primary btn-xs active" {% else %} class="btn btn-default btn-xs" {% endif %}>ON</button>
+                    <button name="auth_switch" value="n" {% if user.auth_search == '0' %} class="btn btn-primary btn-xs active" {% else %} class="btn btn-default btn-xs" {% endif %}>OFF</button>
+                </div>
+                </td>
+                <td align="center">{{ user.auth_add }}</td>
+                <td align="center">{{ user.auth_del }}</td>
+                <td align="center">{{ user.auth_update }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</form>
+-->
+    <section class="content-header">
+        <h1>
+            用户权限控制管理
+            <small>
+                
+            </small>
+        </h1>
+    </section>
+
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">处理用户权限申请</h3>
+                    </div>
+                    <div class="box-body">
+
+                        <form action="">
+                        搜索: <input type="text" id="txt1" onkeyup="showHint(this.value)"  placeholder="这儿仅是测试">
+                        <p>结果：<span id="txtHint"></span></p>
+                        </form>
+
+                        <div id=user_list >用户列表</div>
+                    </div>
+                    <div class="box-body">
+                        <button type="button" class="btn btn-primary" onclick="showUserApplyList()">显示申请</button><br><br>
+                        <div id=userapplylist>用户申请列表</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

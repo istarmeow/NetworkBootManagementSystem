@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}值班组员{% endblock %}
+
+{% block right %}
+
+    <section class="content-header">
+        <h1>
+            值班组员
+            <small>
+
+            </small>
+        </h1>
+    </section>
+    <!-- Main content 表格内容-->
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <!--表格头部，有标题和搜索-->
+                    <div class="box-header">
+                        <h3 class="box-title">组员信息</h3>
+                        <small>一共 {{ all_employee_num }} 人，可安排值班共 {{ able_employee_num }} 人！</small>
+                        <!--标题及搜索框-->
+                    </div>
+                    <!-- /.box-header 表格数据-->
+                    <div class="box-body table-responsive no-padding">
+                        <table class="table table-hover">
+                            <th align="center">编辑</th>
+                            <th align="center">编号</th>
+                            <th align="center">姓名</th>
+                            <th align="center">是否安排值班</th>
+                            {% for employee in all_employee %}
+                            <tr
+                                {% if employee.available is False %}
+                                    style="background-color:#FFE4CA;"
+                                {% endif %}
+                            >
+                                <td align="center">
+                                    <button onclick="employee_update(this, {{ employee.id }})" target="_top" class="btn btn-primary btn-circle"><i class="glyphicon glyphicon-list"></i></button>
+                                    <a onclick="delcfm('{% url 'employee_del' %}?del_id={{ employee.id }}')" target="_top" class="btn btn-warning btn-circle"><i class="glyphicon glyphicon-remove"></i></a>
+
+                                </td>
+                                <td align="center">{{ employee.num }}</td>
+                                <td align="center">{{ employee.name }}</td>
+
+                                {% if  employee.available is True %}
+                                    <td align="center"><span class="glyphicon glyphicon-ok"></span></td>
+                                {% else %}
+                                    <td align="center"><span class="glyphicon glyphicon-remove"></span></td>
+                                {% endif %}
+
+                            </tr>
+
+                            {% endfor %}
+                      </table>
+                    </div>
+                    <!-- 表格底部显示状态 -->
+                    <div class="box-footer">
+                        <button class="btn btn-primary" data-toggle="modal" data-target="#EmployeeAdd">增加组员信息</button>
+
+
+                        <!--模态框更新-->
+                        <form method="post" action="{% url 'employee_update' %}" class="form-horizontal" role="form" onsubmit="return check_form()" style="margin: 20px;">
+                            <div class="modal modal-info fade" id="EmployeeUpdate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                                &times;
+                                            </button>
+                                            <h4 class="modal-title">
+                                                更新组员信息
+                                            </h4>
+                                        </div>
+
+                                        <div class="modal-body">
+                                            <form class="form-horizontal" role="form">
+                                                <!--《表单隐藏域》隐藏id属性，方便传入后端-->
+                                                <input type="hidden" class="form-control"  name="update_id" id="update_id">
+
+                                                <div class="form-group">
+                                                    <label class="col-sm-3 control-label">编号</label>
+                                                    <div class="col-sm-9">
+                                                        <input type="text" class="form-control"  name="update_num" id="update_num" required placeholder="编号错误重新排序，编号不能重复">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-3 control-label">姓名</label>
+                                                    <div class="col-sm-9">
+                                                        <input type="text" class="form-control"  name="update_name" id="update_name" required placeholder="姓名错误重新更新">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-3 control-label">是否值班</label>
+                                                    <div class="col-sm-9">
+                                                        <select name="update_available" class="form-control">
+                                                            <option value ="是">是</option>
+                                                            <option value ="否">否</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <input type="hidden"/>
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                                            </button>
+                                            <button type="submit" class="btn btn-primary">
+                                                提交
+                                            </button><span id="tip"> </span>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal -->
+                            </div>
+                        </form>
+
+                        <!--模态框增加-->
+                        <form method="post" action="{% url 'employee_add' %}" class="form-horizontal" role="form" onsubmit="return check_form()" style="margin: 20px;">
+                            <div class="modal modal-info fade" id="EmployeeAdd" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                                &times;
+                                            </button>
+                                            <h4 class="modal-title">
+                                                增加组员信息
+                                            </h4>
+                                        </div>
+
+                                        <div class="modal-body">
+                                            <form class="form-horizontal" role="form">
+                                                <div class="form-group">
+                                                    <label class="col-sm-3 control-label">编号</label>
+                                                    <div class="col-sm-9">
+                                                        <input type="text" class="form-control"  name="add_num"  required placeholder="输入编号，不能和以前重复，且为数字">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-3 control-label">姓名</label>
+                                                    <div class="col-sm-9">
+                                                        <input type="text" class="form-control"  name="add_name" required placeholder="组员姓名">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-3 control-label">是否值班</label>
+                                                    <div class="col-sm-9">
+                                                        <select name="add_available" class="form-control">
+                                                            <option value ="是">是</option>
+                                                            <option value ="否" selected>否</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <input type="hidden"/>
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                                            </button>
+                                            <button type="submit" class="btn btn-primary">
+                                                提交
+                                            </button><span id="tip"> </span>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal -->
+                            </div>
+                        </form>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<script type="text/javascript">
+
+function employee_update(obj, id) {
+    var num=$(obj).parent().parent().children().eq(1).text();
+    var name=$(obj).parent().parent().children().eq(2).text();
+    $('#update_num').val(num);
+    $('#update_name').val(name);
+    $('#update_id').val(id);
+//    最后显示出模态框
+    $('#EmployeeUpdate').modal('show');
+}
+
+</script>
+
+{% endblock %}
+

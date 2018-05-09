@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}镜像信息更新{% endblock %}
+
+{% block right %}
+    <section class="content-header">
+        <h1>
+            更新镜像文件信息
+            <small>
+                
+            </small>
+        </h1>
+    </section>
+
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">修改启动镜像</h3>
+                    </div>
+                    <div class="box-body">
+                        <form method="post" action="{% url 'image_file_update' %}">
+                            <p>
+                                <!--不显示的唯一id，用于提交表单后对比前后是否变化-->
+                                <input type="text" name="id" value="{{ update_name.id }}" readonly style="display:none">
+                            </p>
+                            <p>
+                                <label>镜像名称：</label>
+                                <input type="text" name="name" value="{{ update_name.name }}" required placeholder="输入这项的名称，便于识别！"  class="form-control" onchange="TextVerifyInput(this.value)">
+                            </p>
+                            <p>
+                                <label>镜像文件名称：</label>
+                                {% if can_choose is True %}
+                                <select name="image_name" class="form-control">
+                                    {% for image_name in images_list %}
+                                        <option value ="{{ image_name }}" {% if update_name.image_name == image_name %} selected="selected" {% endif %}>{{ image_name }}</option>
+                                    {% endfor %}
+                                </select>
+                                {% else %}
+                                <input type="text" name="image_name" value="{{ update_name.image_name }}" required placeholder="选择列表出错，请手动输入镜像文件名" class="form-control">
+                                {% endif %}
+                            </p>
+                            <p>
+                                <label>镜像硬盘类型：</label>
+                                <input type="text" name="disk_type" value="{{ update_name.disk_type }}" required placeholder="例如：sda、sdc"  class="form-control">
+                            </p>
+                            <p>
+                                <label>镜像硬盘容量：</label>
+                                <input type="text" name="disk_size" value="{{ update_name.disk_size }}" required placeholder="备份硬盘的大小" class="form-control">
+                            </p>
+                            <p>
+                                <label>可用电脑型号：</label>
+                                <input type="text" name="available_model" value="{{ update_name.available_model }}" required placeholder=""  class="form-control">
+                            </p>    <p>
+                                <label>选择可用：</label>
+                                <input type="radio" name="available" value="y" {% if update_name.available is True %} checked="checked" {% endif %}/>是
+                                <input type="radio" name="available" value="n" {% if update_name.available is False %} checked="checked" {% endif %}/>否
+                            </p>
+                            <p>
+                                <label>说明：</label>
+                                <!--<input name="explain" value="{{ update_name.explain }}" class="form_data" style="width:504px; height:60px; margin-top: 20px" >-->
+                                <textarea name="explain" value="{{ update_name.explain }}" rows="3"  class="form-control">{{ update_name.explain }}</textarea>
+
+                            </p>
+                            <input type="submit" value="更新Clonezilla镜像信息" onclick="operation_confirmation()" class="btn btn-success">
+                            <a href="{% url 'image_file_query_operation' %}" class="btn btn-default">返回查询页</a>
+
+                        </form>
+                        <p>{{ update_status }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}添加ISO文件{% endblock %}
+
+
+<!--<link href="{% static "css/base.css" %}" rel="stylesheet">-->
+<!--<form ... enctype="multipart/form-data"> 这样才能传文件-->
+{% block right %}
+    <form action="{% url 'add_boot_iso_info' %}" method="post" enctype="multipart/form-data" class="input_p">
+        <p>启动名称:
+            <input type="text" name="name" value="" class="add_boot_image_form"> {{ nameCheck }}
+        </p>
+        <p>MAC 地址:
+            <input id='mac' name="mac" value="" class="add_boot_image_form"> {{ macCheck }}
+        </p>
+        <p>ISO 地址:
+            <input name="iso_svr" value="" class="add_boot_image_form">{{ iso_svrCheck }}
+        </p>
+        <p>ISO 上传:
+            <input name="iso_upload" value="" type="file">{{ iso_uploadCheck }}
+        </p>
+        <p>ISO 名称:
+            <input name="iso_name" value="可不写，后端默认提取" class="add_boot_image_form" style="color: #acacac">{{ iso_nameCheck }}
+        </p>
+        <p>是否启用:
+            <!--<input name="available" value="默认否，输入Y、y或True启用">{{ availableCheck }}-->
+            <input type="radio" name="available" value="y"/>是
+            <input type="radio" checked="checked" name="available" value="n"/>否
+        </p>
+        <p>说&nbsp;&nbsp;明:
+            <input name="explain" value="" style="width:545px; height:60px" >{{ explainCheck }}
+        </p>
+
+        <input type="submit" value="增加镜像信息" class="submit_button">
+    </form>
+<p>{{ success }}</p>
+{% endblock %}

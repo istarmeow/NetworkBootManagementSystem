@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}选择Clonezilla全自动启动控制{% endblock %}
+
+{% block right %}
+
+
+
+    <section class="content-header">
+        <h1>
+            选择启动恢复镜像
+            <small>
+                {% if can_find is True %}
+                查询到 {{ find_num }} 条结果！
+                {% else %}
+                无查询结果！
+                {% endif %}
+            </small>
+        </h1>
+    </section>
+
+
+
+    <!-- Main content 表格内容-->
+
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <form method="post" action="{% url 'select_default_image_control' %}">
+                        <!--表格头部，有标题和搜索-->
+                        <div class="box-header">
+                            <h3 class="box-title">启动镜像--<small>默认优先从下列HTTP服务器恢复，如果不可用，将从HTTP服务器中的默认选择恢复</small></h3>
+                            <!--标题及搜索框-->
+                            <div class="box-tools">
+
+                                    <div class="input-group input-group-sm" style="width: 150px;">
+                                        <input type="text" name="keyword" value="{{ keyword }}" class="form-control pull-right" placeholder="模糊搜索">
+                                        <div class="input-group-btn">
+                                            <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+                                        </div>
+                                    </div>
+
+
+                            </div>
+                        </div>
+                        <!-- /.box-header 表格数据-->
+                        <div class="box-body table-responsive no-padding">
+                            <table class="table table-hover">
+                                {% if can_find is True %}
+                                <!--当有查询结果才显示-->
+                                <tr>
+                                    <th>功能操作</th>
+                                    <th>选择默认启动镜像</th>
+                                    <th align="center">镜像文件</th>
+                                    <th align="center">HTTP服务器</th>
+                                    <th align="center">Samba服务器</th>
+                                    <th align="center">恢复硬盘编号</th>
+                                    <th align="center">默认启用</th>
+                                </tr>
+
+                                {% for boot_select in boot_select_list %}
+                                <tr
+                                    {% if boot_select.available is True %}
+                                        style="background-color:#02C874;"
+                                    {% endif %}
+                                >
+                                    <td align="center">
+                                        <!--<button type="submit" name="get_select" value="{{ boot_select.select_name }}" class="btn btn-info btn-circle"><i class="glyphicon glyphicon-ok"></i></button>-->
+                                        <a href="{% url 'select_default_image_control_update' %}?update_id={{ boot_select.id }}"  target="_top" class="btn btn-primary btn-circle"><i class="glyphicon glyphicon-list"></i></a>
+                                        <a onclick="delcfm('{% url 'select_default_image_control_delete' %}?delete_id={{ boot_select.id }}')" target="_top" class="btn btn-warning btn-circle"><i class="glyphicon glyphicon-remove"></i></a>
+                                    </td>
+                                    <td>
+                                        <button type="submit" name="get_select" value="{{ boot_select.select_name }}" class="btn btn-info btn-circle"><i class="glyphicon glyphicon-ok"></i></button>
+                                        {{ boot_select.select_name }}</td>
+                                    <td>{{ boot_select.image_file }}</td>
+                                    <td>{{ boot_select.http_server }}</td>
+                                    <td>{{ boot_select.samba_server }}</td>
+                                    <td align="center">{{ boot_select.restore_disk }}</td>
+
+                                    {% if boot_select.available is True %}
+                                        <td align="center"><span class="glyphicon glyphicon-ok"></span></td>
+                                    {% else %}
+                                        <td align="center"><span class="glyphicon glyphicon-remove"></span></td>
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+
+                                {% endif %}
+                          </table>
+                        </div>
+                    </form>
+                    <!-- 表格底部显示状态 -->
+                    <div class="box-footer">
+                        <p>{{ delete_status }}</p>
+                        <p>{{ switch_status }}</p>
+                        <p>{{ add_status }}</p>
+
+                        <br>
+                        <p>
+                            <a href="{% url 'select_default_image_control_add' %}" class="link_button btn btn-primary">增加其他的默认项</a>
+                            <a href="{% url 'update_select_default_image_http' %}" class="link_button btn btn-warning" title="更新所有HTTP服务器为默认选择">HTTP同步默认</a>
+                            <a href="javascrpt:void(0)" class="link_button btn btn-primary" onclick="chmod_images()" id="chmod_images" title="批量修改镜像文件的权限为644，防止image用户读取失败">镜像批量授权</a>
+                        </p>
+                        <br>
+                        <p><button class="btn btn-primary" data-toggle="modal" data-target="#DefaultImage">使用模态框添加项</button></p>
+                    </div>
+
+                   <!-- 模态框添加默认选择启动镜像（Modal） -->
+                    <form method="post" action="{% url 'select_default_image_control_add_bootstrap' %}" class="form-horizontal" role="form" id="form_data" onsubmit="return check_form()" style="margin: 20px;">
+    <div class="modal fade" id="DefaultImage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        默认选择镜像启动
+                    </h4>
+                </div>
+
+                <div class="modal-body">
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label for="name" class="col-sm-3 control-label">默认镜像名称</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="name" name="name" value=""
+                                       placeholder="输入这项的名称，便于识别！">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="image_file" class="col-sm-3 control-label">选择默认镜像选择</label>
+                            <div class="col-sm-9">
+                                <select name="image_file" id="image_file" class="form-control">
+                                    {% for image_file in image_files_list %}
+                                        <option value ="{{ image_file.name }}">{{ image_file.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="http_server" class="col-sm-3 control-label">HTTP服务器选择</label>
+                            <div class="col-sm-9">
+                                <select name="http_server" id="http_server" class="form-control">
+                                    {% for http_server in http_server_list %}
+                                        <option value ="{{ http_server.http_name }}">{{ http_server.http_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="samba_server" class="col-sm-3 control-label">Samba服务器选择</label>
+                            <div class="col-sm-9">
+                                <select name="samba_server" id="samba_server" class="form-control">
+                                    {% for samba_server in samba_server_list %}
+                                        <option value ="{{ samba_server.samba_name }}">{{ samba_server.samba_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                         <div class="form-group">
+                            <label for="disk_num" class="col-sm-3 control-label">恢复硬盘选择</label>
+                            <div class="col-sm-9">
+                                <select name="disk_num" id="disk_num" class="form-control">
+                                    {% for disk_num in disk_num_list %}
+                                        <option value ="{{ disk_num.disk_name }}">{{ disk_num.disk_name }}</option>
+                                    {% endfor %}
+                                </select>
+                             </div>
+                        </div>
+
+                          <div class="form-group">
+                            <label for="image_path" class="col-sm-3 control-label">镜像加载路径</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="image_path" name="image_path" value="/home/partimag">
+                             </div>
+                        </div>
+
+                         <div class="form-group">
+                            <label for="image_path" class="col-sm-3 control-label">选择可用</label>
+                            <div class="col-sm-9">
+                                <input type="radio" name="available" value="y"/>是
+                                <input type="radio" name="available" checked="checked" value="n"/>否
+                             </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="explain" class="col-sm-3 control-label">说明</label>
+                            <div class="col-sm-9">
+                                <textarea rows="3" class="form-control" name="explain" value="" id="explain"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        提交
+                    </button><span id="tip"> </span>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+</form>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+
+<script type="text/javascript">
+
+function chmod_images() {
+    $.ajax({
+        // url: 'http://192.168.96.99:8898/chmod_images',
+        url: 'http://192.168.96.99:8898/chmod_images',
+        type: 'GET',
+        dataType: 'text',
+        timeout: 1000,
+        cache: false,
+        beforeSend: LoadFunction, //加载执行方法
+//         error: erryFunction,  //错误执行方法
+        success: succFunction //成功执行方法
+    });
+    function LoadFunction() {
+        $("#chmod").html('开始处理');
+    }
+    function succFunction(chmod_images) {
+        alert(chmod_images);
+        $("#chmod_images").html(chmod_images);
+    }
+}
+</script>
+
+{% endblock %}

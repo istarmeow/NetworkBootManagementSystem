@@ -1,0 +1,100 @@
+{% load static %}
+<!--<!DOCTYPE html>-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}模板{% endblock %}</title>
+    <link href="{% static 'css/base.css' %}" rel="stylesheet" type="text/css"/>
+     <link href="../static/css/base.css" rel="stylesheet" type="text/css"/>
+
+    <link href="{% static 'bootstrap-3.3.7/dist/css/bootstrap.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="../static/bootstrap-3.3.7/dist/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="{% static 'js/submit.js' %}"></script>
+    <script type="text/javascript" src="{% static 'bootstrap-3.3.7/dist/js/bootstrap.js' %}"></script>
+
+
+
+</head>
+<body>
+
+    <div id="top">
+        <a href="{% url 'select_default_image_control' %}" class="logo">PXE控制平台系统</a>
+   </div>
+
+    <div id="context">
+        <div class="left">
+            {% block left %}
+            <!--class="list-group"-->
+            <ul class="list-group">
+                <li {% if request.path == '/' %}  class="list-group-item active" {% endif %}>
+                    <a href="/" target="_top" class="list-group-item">主页</a>
+                </li>
+                <li>
+                    <a href="/admin/" target="_top" class="list-group-item">后台管理界面</a>
+                </li>
+                <li>
+                    <a href="http://192.168.96.26/zabbix/screens.php?ddreset=1" target="_blank" class="list-group-item">Zabbix监控Samba流量</a>
+                </li>
+                <li>
+                    <a href="{% url 'boot_select' %}?mac=11:22:33:aa:bb:cc&ip=172.16.66.100&serial=0" target="_blank" class="list-group-item">测试网络启动</a>
+                </li>
+                {% url 'select_boot_control' as Highlighted %}
+                <li {% if request.path == Highlighted %}  class="list-group-item active" {% endif %}>
+                    <a href="{% url 'select_boot_control' %}" target="_top" class="list-group-item">Clonezilla或ISO启动控制-选中</a>
+                </li>
+                {% url 'select_default_samba' as Highlighted %}
+                <li {% if request.path == Highlighted %}  class="list-group-item active" {% endif %}>
+                    <a href="{% url 'select_default_samba' %}" target="_top" class="list-group-item">Samba服务器管理-选中查改删增</a>
+                </li>
+                {% url 'image_file_query_operation' as Highlighted %}
+                <li {% if request.path == Highlighted %}  class="list-group-item active" {% endif %}>
+                    <a href="{% url 'image_file_query_operation' %}" target="_top" class="list-group-item">Clonezilla制作镜像管理-查改删增</a>
+                </li>
+                {% url 'select_default_image_control' as Highlighted %}
+                <li {% if request.path == Highlighted %}  class="list-group-item active" {% endif %}>
+                    <a href="{% url 'select_default_image_control' %}" target="_top" class="list-group-item">Clonezilla默认启动控制-选中查改删增</a>
+                </li>
+                {% url 'boot_from_clonezilla_get_log' as Highlighted %}
+                <li {% if request.path == Highlighted %}  class="list-group-item active" {% endif %}>
+                    <a href="{% url 'boot_from_clonezilla_get_log' %}" target="_top" class="list-group-item">Clonezilla获取日志-浏览</a>
+                </li>
+                {% url 'boot_from_clonezilla_auto' as Highlighted %}
+                <li {% if request.path == Highlighted %}  class="list-group-item active" {% endif %}>
+                    <a href="{% url 'boot_from_clonezilla_auto' %}" target="_top" class="list-group-item">Clonezilla自动启动管理-查改删</a>
+                </li>
+                {% url 'select_boot_iso_control' as Highlighted %}
+                <li {% if request.path == Highlighted %}  class="list-group-item active" {% endif %}>
+                    <a href="{% url 'select_boot_iso_control' %}" target="_top" class="list-group-item">ISO默认启动控制-选中</a>
+                </li>
+
+               <li>
+                    <a href="https://docs.djangoproject.com/en/1.11/" target="_blank"  class="list-group-item">Django官方文档</a>
+                </li>
+                <li>
+                    <a href="{% url 'document' %}" target="_top" class="list-group-item">常用命令</a>
+                </li>
+                <li>
+                    <a href="http://172.16.66.1:8088/" target="_blank" class="list-group-item">Nginx主页</a>
+                </li>
+                <li>
+                    <a href="/static/css/base.css" target="_blank" class="list-group-item">显示css内容</a>
+                </li>
+                <li>
+                    <a href="/static/js/submit.js" target="_blank" class="list-group-item">显示js内容</a>
+                </li>
+           </ul>
+            {% endblock %}
+        </div>
+       <div class="right">
+           {% block right %}
+           {% endblock %}
+       </div>
+   </div>
+
+   <div id="footer">
+       <p>An open and free service that allows a PC to boot from server!</p>
+   </div>
+
+</body>
+</html>

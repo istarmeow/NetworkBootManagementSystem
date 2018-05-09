@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}更新默认启动方式{% endblock %}
+
+{% block right %}
+    <section class="content-header">
+        <h1>
+            更新默认启动方式
+            <small>
+                
+            </small>
+        </h1>
+    </section>
+
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">更新启动信息</h3>
+                    </div>
+                    <div class="box-body">
+                        <form method="post" action="{% url 'select_default_image_control_update' %}">
+                            <p>
+                                <!--不显示的唯一id，用于提交表单后对比前后是否变化-->
+                                <input type="text" name="id" value="{{ update_select_name.id }}" readonly style="display:none">
+                            </p>
+                            <p>
+                                <label>默认镜像名称：</label>
+                                <input type="text" name="name" value="{{ update_select_name.select_name }}" required placeholder="输入这项的名称，便于识别！"  class="form-control" onchange="TextVerifyInput(this.value)">
+                            </p>
+                            <p>
+                                <label>选择默认镜像选择：</label>
+                                <select name="image_file" class="form-control">
+                                    {% for image_file in image_files_list %}
+                                        <option value ="{{ image_file.name }}" {% if update_select_name.image_file.name == image_file.name %} selected="selected" {% endif %}>{{ image_file.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </p>
+                            <p>
+                                <label>HTTP服务器选择：</label>
+                                <select name="http_server" class="form-control">
+                                    {% for http_server in http_server_list %}
+                                        <option value ="{{ http_server.http_name }}" {% if update_select_name.http_server.http_name == http_server.http_name %} selected="selected" {% endif %}>{{ http_server.http_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </p>
+                            <p>
+                                <label>Samba服务器选择：</label>
+                                <select name="samba_server" class="form-control">
+                                    {% for samba_server in samba_server_list %}
+                                        <option value ="{{ samba_server.samba_name }}" {% if update_select_name.samba_server.samba_name == samba_server.samba_name %} selected="selected" {% endif %}>{{ samba_server.samba_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </p>
+                            <p>
+                                <label>恢复硬盘选择：</label>
+                                <select name="disk_num" class="form-control">
+                                    {% for disk_num in disk_num_list %}
+                                        <option value ="{{ disk_num.disk_name }}" {% if update_select_name.restore_disk.disk_name == disk_num.disk_name %} selected="selected" {% endif %}>{{ disk_num.disk_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </p>
+                            <p>
+                                <label>镜像加载路径：</label>
+                                <input type="text" name="image_path" value="/home/partimag" class="form-control">
+                            </p>
+                            <p>
+                                <label>选择可用：</label>
+                                <input type="radio" name="available" value="y" {% if update_select_name.available is True %} checked="checked" {% endif %}/>是
+                                <input type="radio" name="available" value="n" {% if update_select_name.available is False %} checked="checked" {% endif %}/>否
+                            </p>
+                            <p>
+                                <label>说明：</label>
+                                <!--<input name="explain" value="{{ update_select_name.explain }}" class="form_data" style="width:504px; height:60px; margin-top: 20px" >-->
+                                <textarea name="explain" value="{{ update_select_name.explain }}" rows="3"  class="form-control">{{ update_select_name.explain }}</textarea>
+                            </p>
+                            <input type="submit" value="更新Clonezilla默认项" onclick="operation_confirmation()" class="btn btn-success">
+                            <a href="{% url 'select_default_image_control' %}" class="btn btn-default">返回查询页</a>
+
+                        </form>
+
+                        <p>{{ update_status }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}镜像信息管理{% endblock %}
+
+{% block right %}
+    <section class="content-header">
+        <h1>
+            镜像文件信息
+            <small>
+                {% if can_find is True %}
+                查询到 {{ find_num }} 条结果！
+                {% else %}
+                无查询结果！
+                {% endif %}
+            </small>
+        </h1>
+    </section>
+
+    <!-- Main content 表格内容-->
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <!--表格头部，有标题和搜索-->
+                    <div class="box-header">
+                        <h3 class="box-title">系统镜像</h3>
+                        <button type="button" class="btn btn-xs" style="background-color:#ff7575;" title="镜像文件可能已删除，需要到Samba服务器检查该镜像名是否存在">镜像不存在</button>
+                        <button type="button" class="btn btn-xs" style="background-color:#5bc0de;">镜像未启用</button>
+                        <!--标题及搜索框-->
+                        <div class="box-tools">
+                            <form method="post" action="{% url 'image_file_query_operation' %}">
+                                <div class="input-group input-group-sm" style="width: 150px;">
+                                    <input type="text" name="keyword" value="{{ keyword }}" class="form-control pull-right" placeholder="模糊搜索">
+                                    <div class="input-group-btn">
+                                        <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+                                    </div>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                    <!-- /.box-header 表格数据-->
+                    <div class="box-body table-responsive no-padding">
+                        <table class="table table-hover">
+                            {% if can_find is True %}
+                            <!--当有查询结果才显示-->
+                            <tr>
+                                <th>功能操作</th>
+                                <th>镜像名称</th>
+                                <th>镜像文件名称</th>
+                                <th>镜像硬盘类型</th>
+                                <th>镜像硬盘容量</th>
+                                <th>可用电脑型号</th>
+                                <th>是否启用</th>
+                            </tr>
+
+                            {% for image_file in image_files_list %}
+                            <tr
+                                {% if image_file.image_name not in images_list %}
+                                    style="background-color:#ff7575;"
+                                {% endif %}
+
+                                {% if image_file.available is not True %}
+                                    style="background-color:#5bc0de;"
+                                {% endif %}
+                            >
+                                <td align="center">
+                                    <!--<a href="{% url 'image_file_update' %}?update_name={{ image_file.name }}"  target="_top" class="btn btn-primary btn-circle"><i class="glyphicon glyphicon-list"></i></a>-->
+                                    <!--<a onclick="delcfm('{% url 'image_file_delete' %}?delete_name={{ image_file.name }}')" target="_top" class="btn btn-warning btn-circle"><i class="glyphicon glyphicon-remove"></i></a>-->
+                                    <a href="{% url 'image_file_update' %}?update_id={{ image_file.id }}"  target="_top" class="btn btn-primary btn-circle"><i class="glyphicon glyphicon-list"></i></a>
+                                    <a onclick="delcfm('{% url 'image_file_delete' %}?delete_id={{ image_file.id }}')" target="_top" class="btn btn-warning btn-circle"><i class="glyphicon glyphicon-remove"></i></a>
+
+                                </td>
+                                <td>{{ image_file.name }}</td>
+                                <td>{{ image_file.image_name }}</td>
+                                <td align="center">{{ image_file.disk_type }}</td>
+                                <td align="center">{{ image_file.disk_size }}</td>
+                                <td>{{ image_file.available_model }}</td>
+                                {% if image_file.available is True %}
+                                    <td align="center"><span class="glyphicon glyphicon-ok"></span></td>
+                                {% else %}
+                                    <td align="center"><span class="glyphicon glyphicon-remove"></span></td>
+                                {% endif %}
+                                <!--<td align="center">{{ image_file.updated }}</td>-->
+                            </tr>
+                            {% endfor %}
+
+                            {% endif %}
+                      </table>
+                    </div>
+                    <!-- 表格底部显示状态 -->
+                    <div class="box-footer">
+                        <br>
+                        {{ delete_status }}
+                        <br>
+                        <a href="{% url 'image_file_add' %}" class="link_button btn btn-primary">增加镜像信息</a>
+                        <a href="{% url 'image_name_remote_manage' %}" class="link_button btn btn-warning" title="远程对Samba服务器的镜像镜像重命名，重命名后需要等待同步到其他Samba服务器。">镜像远程管理</a>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+{% endblock %}

@@ -1,0 +1,75 @@
+ {% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}镜像信息新增{% endblock %}
+
+{% block right %}
+    <section class="content-header">
+        <h1>
+            增加镜像文件信息
+            <small>
+                
+            </small>
+        </h1>
+    </section>
+
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">创建新的启动镜像</h3>
+                    </div>
+                    <div class="box-body">                        
+                        <form method="post" action="{% url 'image_file_add' %}">
+                            <p>
+                                <label>镜像名称：</label>
+                                <input type="text" name="name" value="" required placeholder="输入这项的名称，便于识别！" class="form-control" onchange="TextVerifyInput(this.value)">
+                            </p>
+                            <p>
+                                <label>镜像文件名称：<a href="http://192.168.96.99:8898/images" target="_blank" style="font-size: 10px;color:#BEBEBE; ">获取地址</a> </label>
+                                {% if can_choose is True %}
+                                <select name="image_name" size="16" class="form-control">
+                                    {% for image_name in images_list %}
+                                        <option value ="{{ image_name }}" {% if image_name == default_recent_image_name %} selected {% endif %}>{{ image_name }}</option>
+                                    {% endfor %}
+                                </select>
+                                {% else %}
+                                <input type="text" name="image_name" value="" required placeholder="选择列表出错，请手动输入镜像文件名" class="form-control">
+                                {% endif %}
+                            </p>
+                            <p>
+                                <label>镜像硬盘类型：</label>
+                                <input type="text" name="disk_type" value="sda" required placeholder="例如：sda、sdc" class="form-control">
+                            </p>
+                            <p>
+                                <label>镜像硬盘容量：</label>
+                                <input type="text" name="disk_size" value="" required placeholder="备份硬盘的大小" class="form-control">
+                            </p>
+                            <p>
+                                <label>可用电脑型号：</label>
+                                <input type="text" name="available_model" value="" required placeholder="" class="form-control">
+                            </p>
+                            <p>
+                                <label>选择可用：</label>
+                                <input type="radio" name="available" checked="checked" value="y"/>是
+                                <input type="radio" name="available" value="n"/>否
+                            </p>
+                            <p>
+                                <label>说明：</label>
+                                <!--<input name="explain" value="" class="form_data" style="width:504px; height:60px; margin-top: 20px" >-->
+                                <textarea name="explain" value="" rows="3"  class="form-control"></textarea>
+
+                            </p>
+                            <input type="submit" value="增加Clonezilla镜像信息" onclick="operation_confirmation()" class="btn btn-success">
+                            <a href="{% url 'image_file_query_operation' %}" class="btn btn-default">返回查询页</a>
+
+                        </form>
+                        {{ add_status }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

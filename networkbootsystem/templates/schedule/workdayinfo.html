@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}创建工作日表{% endblock %}
+
+{% block right %}
+
+<script type="text/javascript">
+
+
+</script>
+
+
+    <section class="content-header">
+        <h1>
+            工作日表刷新
+            <small>
+
+            </small>
+        </h1>
+    </section>
+
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <!--表格头部，有标题和搜索-->
+                    <div class="box-header">
+                        <h3 class="box-title">若修改了法定修改日，重新提交即可刷新从今天开始到填写月份的工作值班数据。</h3>
+                        <!--标题及搜索框-->
+                    </div>
+                    <div class="box-body">
+                        <form method="post" action="{% url 'workdayinfo' %}">
+                            <div class="form-group">
+                                <label class="col-sm-1">增加年月：</label>
+                                <div class="col-sm-5">
+                                    <input name="to_a_month" value="{{ to_a_month }}"  placeholder="填入大于等于本月的值，例如2018.1，如果填写错误将使用默认到这个月底" class="form-control">
+                                    <br>
+                                    <input type="submit" value="提交" class="btn btn-default">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+               </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

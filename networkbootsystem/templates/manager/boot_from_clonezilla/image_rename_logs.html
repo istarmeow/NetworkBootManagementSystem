@@ -1,0 +1,50 @@
+ {% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}镜像重命名日志{% endblock %}
+
+{% block right %}
+    <section class="content-header">
+        <h1>
+            镜像文件名称重命名日志
+            <small>
+                
+            </small>
+        </h1>
+    </section>
+
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-info col-xs-5">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">镜像名称重命名日志</h3>
+                    </div>
+                    <div class="box-body">
+                        <table class="table table-striped">
+                            <tr>
+                                <th>日期</th>
+                                <th>时间</th>
+                                <th align="left">旧名称</th>
+                                <th>新名称</th>
+                            </tr>
+                            {% for log in logs %}
+                            <tr>
+                                <td align="center">{{ log.0 }}</td>
+                                <td align="center">{{ log.1 }}</td>
+                                <td>{{ log.2 }}</td>
+                                <td>{{ log.3 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    <div class="box-footer">
+                        <a href="{% url 'image_name_remote_manage' %}" class="link_button btn btn-warning" title="远程对Samba服务器的镜像镜像重命名，重命名后需要等待同步到其他Samba服务器。">镜像远程管理</a>
+                        <a href="{% url 'image_file_query_operation' %}" class="btn btn-default">返回查询页</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

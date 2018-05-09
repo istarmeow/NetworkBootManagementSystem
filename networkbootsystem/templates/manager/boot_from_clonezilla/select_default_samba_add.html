@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}Samba服务器增加{% endblock %}
+
+{% block right %}
+
+    <section class="content-header">
+        <h1>
+            Samba服务器增加
+            <small>
+
+            </small>
+        </h1>
+    </section>
+
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">创建新项</h3>
+                    </div>
+                    <div class="box-body">
+
+                        <form method="post" action="{% url 'select_default_samba_add' %}">
+
+                            <p>
+                                <label>Samba服务器名称：</label>
+                                <input type="text" name="samba_name" value="" required placeholder="输入这项的名称，便于识别！" class="form-control" onchange="TextVerifyInput(this.value)">
+                            </p>
+                            <p>
+                                <label>Samba服务器IP：</label>
+                                <input type="text" name="samba_ip" value="" required placeholder="IP" class="form-control">
+                            </p>
+                            <p>
+                                <label>镜像目录：</label>
+                                <input type="text" name="samba_folder" value="/images" required placeholder="" class="form-control">
+                            </p>
+                            <p>
+                                <label>服务器用户：</label>
+                                <input type="text" name="samba_user" value="imagman" required placeholder="用户名" class="form-control">
+                            </p>
+                            <p>
+                                <label>服务器密码：</label>
+                                <input type="text" name="samba_password" value="duoyi" required placeholder="" class="form-control">
+                            </p>
+                            <p>
+                                <label>测速Http服务器端口：</label>
+                                <input type="text" name="netspeed_port" value="" placeholder="端口号" class="form-control">
+                            </p>
+                            <p>
+                                <label>测速网速获取地址：</label>
+                                <input type="text" name="netspeed_path" value="/netspeed" required placeholder="" class="form-control">
+                            </p>
+
+                            <p>
+                                <label>选择可用：</label>
+                                <input type="radio" name="available" checked="checked" value="y"/>是
+                                <input type="radio" name="available" value="n"/>否
+                            </p>
+                            <p>
+                                <label>是否默认：</label>
+                                <input type="radio" name="default" value="y"/>是
+                                <input type="radio" name="default" checked="checked" value="n"/>否&nbsp&nbsp如果选中是，则其他Samba将取消默认
+                            </p>
+                            <p>
+                                <label>说明：</label>
+                                <!--<input name="explain" value="" class="form_data" style="width:504px; height:60px; margin-top: 20px" >-->
+                                <textarea name="explain" value="" rows="3"  class="form-control"></textarea>
+
+                            </p>
+                            <input type="submit" value="增加Samba信息" onclick="operation_confirmation()" class="btn btn-success">
+                            <a href="{% url 'select_default_samba' %}" class="btn btn-default">返回查询页</a>
+
+
+                        </form>
+                        <br>
+                        构建Samba服务地址：//IP/images；测速地址：http://IP/netspeed
+                        <br>
+                        {% if add_status is True %}
+                            <p>添加成功！</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

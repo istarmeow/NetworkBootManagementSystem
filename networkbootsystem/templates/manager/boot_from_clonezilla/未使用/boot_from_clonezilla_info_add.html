@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}增加{% endblock %}
+
+{% block right %}
+{% if add_flag is True %}
+    <form method="post" action="{% url 'boot_from_clonezilla_info_add' %}">
+        <p>
+            <label>启动名称：</label>
+            <input type="text" name="name" value="" required class="form_old_data">
+        </p>
+        <p>
+            <label>MAC地址：</label>
+            <input type="text" name="mac" value="" required class="form_old_data">
+        </p>
+        <p>
+            <label>Clonezilla文件地址：</label>
+            <!--<input type="text" name="http_svr" value="http://192.168.96.99" placeholder="Clonezilla解压文件存放根目录的http服务器" class="form_old_data">http://192.168.96.99  |  http://172.16.66.1:8088-->
+            <select name="http_svr">
+                {% for http_server in choose_http_server %}
+                    <option value ="{{ http_server.server_name }}">{{ http_server.server_name }}</option>
+                {% endfor %}
+            </select>
+        </p>
+
+        <!--<p>-->
+            <!--<label>服务器用户名：</label>-->
+            <!--<input type="text" name="user_name" value="imagman" placeholder="samba服务器用户" class="form_old_data">imagman  |  clonezilla-->
+        <!--</p>-->
+        <!--<p>-->
+            <!--<label>服务器登录密码：</label>-->
+            <!--<input type="text" name="user_password" value="duoyi" placeholder="samba服务器密码" class="form_old_data">duoyi | clonezilla-->
+        <!--</p>-->
+        <!--<p>-->
+            <!--<label>镜像存储服务器：</label>-->
+            <!--<input type="text" name="image_server_path" value="//192.168.96.99/images" placeholder="samba服务器，左下斜线方式" class="form_old_data">//192.168.96.66/images  |  //192.168.96.99/images  |  //172.16.66.66/images |-->
+        <!--</p>-->
+        <p>
+            <label>Samba服务器：</label>
+            <select name="samba_svr">
+                {% for samba_server in choose_samba_server %}
+                    <option value ="{{ samba_server.server_name }}">{{ samba_server.server_name }}</option>
+                {% endfor %}
+            </select>
+        </p>
+        <p>
+            <label>镜像加载路径：</label>
+            <input type="text" name="image_path" value="/home/partimag" placeholder="左下斜线方式" class="form_old_data">/home/partimag
+        </p>
+
+        <p>
+            <label>镜像名称：</label>
+            <!--<input type="text" name="image_name" value="" class="form_old_data">-->
+            <select name="choose_image_name">
+                {% for image_name in choose_image_name %}
+                    <option value ="{{ image_name.image_name }}">{{ image_name.image_name }}</option>
+                {% endfor %}
+            </select>
+        </p>
+        <p>
+            <label>恢复硬盘编号：</label>
+            <input type="text" name="disk_num" value="sda" class="form_old_data">
+        </p>
+        <p>
+            <label>是否启用：</label>
+            <input type="radio" name="available" checked="checked" value="y"/>是
+            <input type="radio" name="available" value="n"/>否
+        </p>
+        <p>
+            <label>说明：</label>
+            <input name="explain" value="" class="form_old_data" style="width:545px; height:60px; margin-top: 20px" >
+        </p>
+        <input type="submit" value="增加Clonezilla配置信息" class="submit_button" onclick="operation_confirmation()">
+        <a href="{% url 'boot_from_clonezilla_info_query_operation' %}" class="link_button">返回查询页</a>
+    </form>
+    {% if add_success is True %}
+        <br><br>
+        <p>已成功添加到数据库！</p>
+    {% endif %}
+{% else %}
+    {% if exists_flag is True %}
+        <br><br>
+        <p>该mac对应的信息已存在！</p><br><br>
+    {% endif %}
+    <p>
+        <a href="{% url 'boot_from_clonezilla_info_query_operation' %}" class="link_button">返回查询页</a>
+    </p>
+    <p>
+        <a href="{% url 'boot_from_clonezilla_info_add' %}" class="link_button">返回继续增加</a>
+    </p>
+
+{% endif %}
+{% endblock %}

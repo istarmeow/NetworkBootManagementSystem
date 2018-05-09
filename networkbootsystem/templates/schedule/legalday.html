@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}法定工作休息日{% endblock %}
+
+{% block right %}
+
+
+    <section class="content-header">
+        <h1>
+            法定工作休息日
+            <small>
+                {{ status }}
+            </small>
+        </h1>
+    </section>
+
+    <!-- Main content 表格内容-->
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-header">
+                        <h3 class="box-title">法定日管理</h3>
+                        <small>操作方法：周末不算在法定日，假如周三为休息日，需要将其加入到法定休息日中，而周末某一天为工作日，需要将其将如法定工作日中</small>
+                    </div>
+                    <!-- /.box-header 表格数据-->
+                    <div class="box-body table-responsive no-padding">
+                        <table class="table table-hover" id="legaldaytable">
+
+                            <tr>
+                                <th align="center">编辑</th>
+                                <th align="center">日期</th>
+                                <th align="center">是否法定工作日</th>
+                                <th align="center">是否法定休息日</th>
+                                <!--<th align="center">操作</th>-->
+                            </tr>
+
+
+                            {% for legalday in legalday_list %}
+                            <tr id='{{ legalday.date }}'>
+                                <td align="center">
+                                    <!--使用模态框进行修改，首先js获取表格的数据-->
+<!--                                    <button onclick="legalday_update_old('{{ legalday.date }}')" target="_top" class="btn btn-primary btn-circle"><i class="glyphicon glyphicon-list"></i></button>-->
+                                    <button onclick="legalday_update(this)" target="_top" class="btn btn-primary btn-circle"><i class="glyphicon glyphicon-list"></i></button>
+
+                                    <a onclick="delcfm('{% url 'legalday_del' %}?delete_id={{ legalday.id }}')" target="_top" class="btn btn-warning btn-circle"><i class="glyphicon glyphicon-remove"></i></a>
+                                </td>
+                                <td align="center">{{ legalday.date }}</td>
+                                {% if  legalday.legalworkday is True %}
+                                    <td align="center"><span class="glyphicon glyphicon-ok"></span></td>
+                                {% else %}
+                                    <td align="center"><span class="glyphicon glyphicon-remove"></span></td>
+                                {% endif %}
+                                {% if  legalday.legalrestday is True %}
+                                    <td align="center"><span class="glyphicon glyphicon-ok"></span></td>
+                                {% else %}
+                                    <td align="center"><span class="glyphicon glyphicon-remove"></span></td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    <!-- 表格底部显示状态 -->
+                    <div class="box-footer">
+                        <button class="btn btn-primary" data-toggle="modal" data-target="#LegalDayAdd">使用模态框添加项</button>
+
+                        <!--模态框新增-->
+                        <form method="post" action="{% url 'legalday_add' %}" class="form-horizontal" role="form" id="form_data_add" onsubmit="return check_form()" style="margin: 20px;">
+                            <div class="modal modal-info fade" id="LegalDayAdd" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                                &times;
+                                            </button>
+                                            <h4 class="modal-title" id="myModalLabel">
+                                                增加法定日
+                                            </h4>
+                                        </div>
+
+                                        <div class="modal-body">
+                                            <form class="form-horizontal" role="form">
+                                                <div class="form-group">
+                                                    <label class="col-sm-3 control-label">日期</label>
+                                                    <div class="col-sm-9">
+                                                        <div class="input-group">
+                                                            <input type="text" class="input-append form-control form_datetime"  name="selectdate" value="" required placeholder="选择日期">
+                                                            <span class="input-group-addon" ><span class="glyphicon glyphicon-time" aria-hidden="true"></span></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-3 control-label">法定选择</label>
+                                                    <div class="col-sm-9">
+                                                        <select name="selectlegal" class="form-control">
+                                                            <option value ="工作日">工作日</option>
+                                                            <option value ="休息日">休息日</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                                            </button>
+                                            <button type="submit" class="btn btn-primary">
+                                                提交
+                                            </button><span id="tip"> </span>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal -->
+                            </div>
+                        </form>
+
+                        <!--模态框更新-->
+                        <form method="post" action="{% url 'legalday_update' %}" class="form-horizontal" role="form" id="form_data_update" onsubmit="return check_form()" style="margin: 20px;">
+                            <div class="modal modal-info fade" id="LegalDayUpdate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                                &times;
+                                            </button>
+                                            <h4 class="modal-title" id="myModalLabel">
+                                                更新法定日
+                                            </h4>
+                                        </div>
+
+                                        <div class="modal-body">
+                                            <form class="form-horizontal" role="form">
+                                                <div class="form-group">
+                                                    <label class="col-sm-3 control-label">日期</label>
+                                                    <div class="col-sm-9">
+                        <!--                                <div class="input-group">-->
+                                                            <input type="text" class="form-control"  name="update_date" id="update_date" required readonly placeholder="更新日期">
+                        <!--                                    <span class="input-group-addon" ><span class="glyphicon glyphicon-time" aria-hidden="true"></span></span>-->
+                        <!--                                </div>-->
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-3 control-label">法定选择</label>
+                                                    <div class="col-sm-9">
+                                                        <select name="update_legal" class="form-control">
+                                                            <option value ="工作日">工作日</option>
+                                                            <option value ="休息日">休息日</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <input type="hidden" id="url1"/>
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                                            </button>
+                                            <button type="submit" class="btn btn-primary">
+                                                提交
+                                            </button><span id="tip"> </span>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal -->
+                            </div>
+                        </form>
+
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+<script type="text/javascript">
+    $(".form_datetime").datetimepicker({
+        language: 'zh-CN',
+        format: "yyyy-mm-dd",
+        minView: "month", //选择日期后，不会再跳转去选择时分秒
+        autoclose: true,
+        todayBtn: true,
+        startDate: "2017-08-01 09:09",
+        minuteStep: 10
+    });
+
+//模态框删除确认提交
+function legalday_update_old(date) {
+//    alert(date);
+//    将值传给模态框中
+    $('#update_date').val(date)
+//    最后显示出模态框
+    $('#LegalDayUpdate').modal('show'); 
+}
+
+function legalday_update(obj) {
+    var date=$(obj).parent().parent().children().eq(1).text();
+    $('#update_date').val(date)
+//    最后显示出模态框
+    $('#LegalDayUpdate').modal('show'); 
+}
+    
+</script>
+{% endblock %}

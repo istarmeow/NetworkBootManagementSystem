@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}更新日志{% endblock %}
+
+{% block right %}
+    <section class="content-header">
+        <h1>
+            更新日志
+            <small>
+
+            </small>
+        </h1>
+    </section>
+    <!-- Main content 表格内容-->
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <!--<div class="box">-->
+                    <!--<div class="box-body table-responsive no-padding">-->
+                        <!--<table class="table table-hover">-->
+                            <tr>
+                            {% for log in logs %}
+
+                            <td>
+                                <div class="well well-lg" style="line-height:36px">
+                                    <h3><strong>{{ log.version }}</strong></h3><br>
+                                    <h4>摘要：{{ log.summary }}</h4>
+                                    <em>更新时间：{{ log.created }}</em>
+                                    <pre style="line-height:25px;margin-right:6px;">{{ log.details }}</pre>
+                                </div>
+                            </td>
+                            {% endfor %}
+                            </tr>
+                        </table>
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        </div>
+    </section>
+
+{% endblock %}

@@ -1,0 +1,18 @@
+记录
+2017.06.24
+
+#!ipxe
+
+kernel {{ http_svr }}/clonezilla/live/vmlinuz
+initrd {{ http_svr }}/clonezilla/live/initrd.img
+imgargs vmlinuz boot=live union=overlay fetch={{ http_svr }}/clonezilla/live/filesystem.squashfs username=user hostname=wily config quiet components noswap edd=on nomodeset nodmraid noeject locales=en_US.UTF-8 keyboard-layouts=NONE ocs_prerun1="dhclient -v eth0" ocs_prerun2="sleep 2" ocs_prerun3="mount -t cifs  -o user={{ user_name }},password={{ user_password }} {{ image_server_path }}  {{ image_path }}" ocs_live_run="ocs-live-restore" ocs_live_extra_param="-g auto -scr -batch -p reboot restoredisk {{ image_name }} {{ disk_num }}" ocs_live_batch=yes vga=788 ip= net.ifnames=0  splash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1
+boot
+
+2017.06.24-
+#!ipxe
+
+kernel {{ http_svr }}/clonezilla/live/vmlinuz
+initrd {{ http_svr }}/clonezilla/live/initrd.img
+imgargs vmlinuz boot=live union=overlay fetch={{ http_svr }}/clonezilla/live/filesystem.squashfs username=user hostname=wily config quiet components noswap edd=on nomodeset nodmraid noeject locales=en_US.UTF-8 keyboard-layouts=NONE ocs_prerun1="dhclient -v eth0" ocs_prerun2="sleep 2" ocs_prerun3="mount -t cifs  -o user={{ user_name }},password={{ user_password }} {{ image_server_path }}  {{ image_path }}" ocs_live_run="ocs-live-restore" ocs_live_extra_param="-g auto -nogui -batch -r -p reboot restoredisk {{ image_name }} {{ disk_num }}" ocs_live_batch=yes vga=788 ip= net.ifnames=0  splash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1
+boot
+

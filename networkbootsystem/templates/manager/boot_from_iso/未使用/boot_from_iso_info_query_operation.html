@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}启动镜像信息查询操作{% endblock %}
+
+{% block right %}
+
+    <form action="{% url 'boot_from_iso_info_query_operation' %}" method="get">
+        <label>关键字:</label>
+        <input name="keyword">
+        <input type="submit" value="模糊搜索" style="margin-bottom:20px;">
+    </form>
+    <!--显示查找的关键字-->
+    <p style="margin:0 0 30px 0">{{ search_word }}</p>
+    <!--显示查找到的数量-->
+    <p style="margin:0 0 30px 0">{{ search_result }}</p>
+    <!--根据search_flag的值判断是否该显示，只有当Y时才显示，不然没数据也会显示一个表头-->
+    {% if search_flag == 'Y' %}
+        <table border="1"  cellpadding="0" cellspacing="0" width="100%">
+            <!--style="text-align: center;"   -->
+            <tread>
+                <tr style="height:40px;">
+                    <th align="center">启动名</th>
+                    <th align="center">MAC地址</th>
+                    <th align="center">加载地址</th>
+                    <th align="center">镜像名</th>
+                    <th align="center">是否启用</th>
+                    <th align="center">更新时间</th>
+                    <th align="center">操作</th>
+                </tr>
+            </tread>
+            <tbody>
+                {% for boot_iso in boot_iso_list %}
+                    <tr style="height:30px;">
+                        <td>{{ boot_iso.name }}</td>
+                        <td align="center">{{ boot_iso.mac }}</td>
+                        <td>{{ boot_iso.iso_svr }}</td>
+                        <td>{{ boot_iso.iso_name }}</td>
+                        {% if boot_iso.available == True %}
+                            <td align="center">Y(True)</td>
+                        {% else %}
+                            <td align="center">N(False)</td>
+                        {% endif %}
+                        <td align="center">{{ boot_iso.updated }}</td>
+                        <!--<td align="center"><a href="/pxesvr/manage/ExecuteDeleteImageInfo?del_mac={{ boot_iso.mac }}" target="_top" onClick="delcfm()" >删除</a></td>-->
+                        <td align="center">
+                            <a href="{% url 'boot_iso_info_query_details' %}?mac={{ boot_iso.mac }}" target="_top">详细</a>
+                            <a href="{% url 'boot_iso_info_execute_delete' %}?delete_mac={{ boot_iso.mac }} " target="_top" onClick="delete_confirmation()" >删除</a>
+                            <a href="{% url 'boot_iso_info_execute_update' %}?update_mac={{ boot_iso.mac }}" target="_top">更新</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    <p>{{ statue }}</p>
+
+{% endblock %}

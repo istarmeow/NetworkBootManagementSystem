@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}选择Clonezilla全自动启动控制{% endblock %}
+
+{% block right %}
+
+    <section class="content-header">
+        <h1>
+            Clonezilla默认启动增加
+            <small>
+                
+            </small>
+        </h1>
+    </section>
+
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">创建新的默认项</h3>
+                    </div>
+                    <div class="box-body">
+                        <form method="post" action="{% url 'select_default_image_control_add' %}" class="form-horizontal" role="form">
+                            <div class="form-group">
+                                <label for="name" class="col-sm-1 control-label">默认镜像名称：</label>
+                                <div class="col-sm-11">
+                                    <input type="text" name="name" id="name" value="" required placeholder="输入这项的名称，便于识别！"  class="form-control" onchange="TextVerifyInput(this.value)">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="image_file" class="col-sm-1 control-label">选择默认镜像选择</label>
+                                <div class="col-sm-11">
+                                    <select name="image_file" id="image_file" size="16" class="form-control">
+                                        {% for image_file in image_files_list %}
+                                            <option value ="{{ image_file.name }}" {% if image_file.name == default_recent_image_name %} selected {% endif %}>{{ image_file.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="http_server" class="col-sm-1 control-label">HTTP服务器选择</label>
+                                <div class="col-sm-11">
+                                    <select name="http_server" id="http_server" class="form-control">
+                                        {% for http_server in http_server_list %}
+                                            <option value ="{{ http_server.http_name }}">{{ http_server.http_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="samba_server" class="col-sm-1 control-label">Samba服务器选择</label>
+                                <div class="col-sm-11">
+                                    <select name="samba_server" id="samba_server" class="form-control">
+                                        {% for samba_server in samba_server_list %}
+                                            <option value ="{{ samba_server.samba_name }}">{{ samba_server.samba_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                             <div class="form-group">
+                                <label for="disk_num" class="col-sm-1 control-label">恢复硬盘选择</label>
+                                <div class="col-sm-11">
+                                    <select name="disk_num" id="disk_num" class="form-control">
+                                        {% for disk_num in disk_num_list %}
+                                            <option value ="{{ disk_num.disk_name }}">{{ disk_num.disk_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                 </div>
+                            </div>
+                              <div class="form-group">
+                                <label for="image_path" class="col-sm-1 control-label">镜像加载路径</label>
+                                <div class="col-sm-11">
+                                    <input type="text" class="form-control" id="image_path" name="image_path" value="/home/partimag">
+                                 </div>
+                            </div>
+                             <div class="form-group">
+                                <label for="image_path" class="col-sm-1 control-label">选择可用</label>
+                                <div class="col-sm-11">
+                                    <input type="radio" name="available" value="y"/>是
+                                    <input type="radio" name="available" checked="checked" value="n"/>否
+                                 </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="explain" class="col-sm-1 control-label">说明</label>
+                                <div class="col-sm-11">
+                                    <textarea rows="3" class="form-control" name="explain" value="" id="explain"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-1 control-label"></label>
+                                <div class="col-sm-3">
+                                    <input type="submit" value="增加Clonezilla默认项" onclick="operation_confirmation()" class="btn btn-success">
+                                    <a href="{% url 'select_default_image_control' %}" class="btn btn-default">返回查询页</a>
+                                </div>
+                            </div>
+                        </form>
+                        {{ add_status }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

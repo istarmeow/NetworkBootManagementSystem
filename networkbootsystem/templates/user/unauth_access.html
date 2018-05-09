@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% load static %}
+
+    
+{% block title %}无权访问{% endblock %}
+
+{% block right %}
+<script type="text/javascript">
+    
+// 无权限的用户显示他的权限，并提供申请权限，存储到数据库
+function showCurrentUser(){
+    $.ajax({
+    url: '/user/show_current_user_permissions',
+    type: 'GET',
+    dataType: 'json',
+    timeout: 3000,
+    cache: false,
+//        beforeSend: LoadFunction, //加载执行方法
+    error: errorFunc,  //错误执行方法
+    success: successFunc //成功执行方法
+    })
+    function errorFunc(){
+        alert('获取信息错误');
+    }
+    function successFunc(userinfo){
+//        alert(userinfo)
+        var user=eval(userinfo);
+        
+        var userinfo = '\
+        <table class="table table-striped">\
+            <tread>\
+                <tr>\
+                    <th align="center">用户名</th>\
+                    <th align="center">查找权限</th>\
+                    <th align="center">增加权限</th>\
+                    <th align="center">删除权限</th>\
+                    <th align="center">更新权限</th>\
+                </tr>\
+            </tread>\
+            <tbody>';
+        $.each(user, function (index, object) {
+            //循环获取数据
+//                    alert('数据编号：' + index);
+
+            var username = object.fields.username;
+            
+            var btn = 'class="btn btn-default btn-xs"'
+            var btnact = 'class="btn btn-primary btn-xs active"'
+            var auth_search = object.fields.auth_search;     
+            if (auth_search=='1'){
+                check_search = 'checked';
+            }
+            else {
+                check_search='';
+            }
+            var auth_add = object.fields.auth_add;
+            if (auth_add=='1'){
+                check_add = 'checked';
+            }
+            else {
+                check_add='';
+            }
+            var auth_del = object.fields.auth_del;
+            if (auth_del=='1'){
+                check_del = 'checked';
+            }
+            else {
+                check_del='';
+            }
+            var auth_update = object.fields.auth_update;
+            if (auth_update=='1'){
+                check_update = 'checked';
+            }
+            else {
+                check_update='';
+            }
+
+            userinfo += '<tr><td align="center" id=username>' + username + '</td>' +
+                '<td align="center">' +
+                    '<input class="checkbox" type="checkbox" name="auth_search" value=' + auth_search + ' ' + check_search + '/>' +
+                '</td>' +
+                '<td align="center">' +
+                    '<input type="checkbox" name="auth_add" value=' + auth_add + ' ' + check_add + '/>' +
+                '</td>' +
+                '<td align="center">' +
+                    '<input type="checkbox" name="auth_del" value=' + auth_del + ' ' + check_del + '/>'  +
+                '</td>' +
+                '<td align="center">' +
+                    '<input type="checkbox" name="auth_update" value=' + auth_update + ' ' + check_update + '/>' +
+                '</td>' +                
+                '</tr>'
+                
+        });
+
+        userinfo += '\
+            </tbody>\
+        </table>\
+        <input type="button" class="btn btn-primary" value="申请权限" \
+        onclick="applyAuth(document.getElementById(\'username\').innerHTML, document.getElementsByName(\'auth_search\')[0].checked, document.getElementsByName(\'auth_add\')[0].checked, document.getElementsByName(\'auth_del\')[0].checked, document.getElementsByName(\'auth_update\')[0].checked)"/>';
+
+        $("#userinfo").html('');
+        $("#userinfo").html(userinfo);
+                
+    }
+}
+    
+showCurrentUser();
+    
+function applyAuth(username, auth_search, auth_add, auth_del, auth_update){
+//    var username=;
+    var test_auth_search=document.getElementsByName('auth_search')[0].value;//获取该项的值
+    var test_auth_add=document.getElementsByName('auth_add')[0].checked;//获取是否被勾选
+//    alert(test_auth_search);
+//    alert(test_auth_add);
+//    alert(username+auth_seach+auth_add+auth_del+auth_update)
+    
+    if(auth_search==true){
+        auth_search='1';
+    }
+    else{
+        auth_search='0';
+    }
+    if(auth_add==true){
+        auth_add='1';
+    }
+    else{
+        auth_add='0';
+    }
+    if(auth_del==true){
+        auth_del='1';
+    }
+    else{
+        auth_del='0';
+    }
+    if(auth_update==true){
+        auth_update='1';
+    }
+    else{
+        auth_update='0';
+    }
+    
+//    alert(username+auth_seach+auth_add+auth_del+auth_update)  
+    $.ajax({        
+    type: "POST",      //data 传送数据类型。post 传递
+    dataType: 'text',  // 返回数据的数据类型text
+    url: "/user/user_apply_permissions", 
+    cache: false,      
+    data: {
+        username: username,
+        auth_search: auth_search,
+        auth_add: auth_add,
+        auth_del: auth_del,
+        auth_update: auth_update
+    },  //传送的数据
+    error: errorFunc,
+    success: successFunc,
+    complete: completeFunc,
+    }) 
+
+    function errorFunc(){
+        alert("数据传输错误");
+    }
+    function successFunc(message) {
+        alert(message);
+    }
+    function completeFunc(){
+//            alert('请求完成后，执行显示用户列表的函数');
+        showCurrentUser();
+    }
+}
+    
+    
+    
+</script>
+没授权，请申请权限
+
+<div id=userinfo>显示当前用户权限信息</div>
+
+{% endblock %}

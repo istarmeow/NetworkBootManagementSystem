@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册</title>
+    <link href="{% static 'bootstrap-3.3.7/dist/css/bootstrap.css' %}" rel="stylesheet" type="text/css"/>
+    <!--<link href="http://192.168.96.25/lr/static/bootstrap-3.3.7/dist/css/bootstrap.css" rel="stylesheet" type="text/css"/>-->
+
+    <link href="{% static 'css/base.css' %}" rel="stylesheet" type="text/css"/>
+    <!--<link href="http://192.168.96.25/lr/static/css/base.css" rel="stylesheet" type="text/css"/>-->
+
+    <script src="{% static 'js/jquery/jquery-2.1.4.min.js' %}"></script>
+    <!--<script src="http://192.168.96.25/lr/static/js/jquery-2.1.4.min.js"></script>-->
+
+    <script type="text/javascript" src="{% static 'bootstrap-3.3.7/dist/js/bootstrap.js' %}"></script>
+    <!--<script type="text/javascript" src="http://192.168.96.25/lr/static/bootstrap-3.3.7/dist/js/bootstrap.js"></script>-->
+    <script type="text/javascript" src="{% static 'js/submit.js' %}"></script>
+    <!--<script type="text/javascript" src="http://192.168.96.25/lr/static/js/submit.js"></script>-->
+
+    <script type="text/javascript">
+        function sendVerificationCode() {
+            var username=document.getElementsByName("username");
+            var password=document.getElementsByName("password");
+            var repassword=document.getElementsByName("repassword");
+            var inbox=document.getElementsByName("email");
+            username = username[0].value
+            password = password[0].value
+            repassword = repassword[0].value
+            inbox = inbox[0].value
+            var succes_key = '成功'
+            $.ajax({
+            type: "POST",      //data 传送数据类型。post 传递
+            dataType: 'text',  // 返回数据的数据类型text
+//            url: "/user/send_verify?username=" + username + '&outbox=' + outbox, 
+            url: "/user/send_verify",
+            cache: false,      
+            data: {
+                username: username,
+                inbox:inbox,
+                password:password,
+                repassword:repassword,
+            },  //传送的数据
+            error: errorFunc,
+            success: successFunc,
+//            complete: completeFunc,
+            }) 
+
+            function errorFunc(){
+                alert("数据传输错误");
+            }
+            function successFunc(message) {
+                alert(message);
+                if (message.indexOf(succes_key)==0){  //成功这个字符串包含在返回值中
+                    show = '\
+                            <input type="text" name="verify" id="verify" value="" required placeholder="验证码"  class="form-control">\
+                            <hr />\
+                            <input type="submit" value="注册" onclick="operation_confirmation()" class="btn btn-primary btn-block">\
+                            '
+                    
+                    $("#show_register").html(show);
+                }
+            }
+            function completeFunc(){
+                alert('验证码发送成功！')
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="col-md-3" id="login-wrapper" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+    <div class="panel panel-primary animated flipInY" >
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                用户注册<h5>{{ seccess_status }}</h5>
+            </h3>
+        </div>
+        <div class="panel-body">
+            <form method="post" action="{% url 'register' %}" class="form-horizontal" role="form">
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        {% if no_user is True %}
+                        <input type="text" name="username" id="username" value="" required placeholder="用户不存在！请输入用户名"  class="form-control">
+                        {% else %}
+                        <input type="text" name="username" id="username" value="" required placeholder="用户名"  class="form-control">
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <input type="password" name="password" id="password" value="" required placeholder="密码"  class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <input type="password" name="repassword" id="repassword" value="" required placeholder="重复密码"  class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <input type="text" name="email" id="email" value="" required placeholder="邮箱"  class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-12">  
+                        <div id=show_register>    
+                            <button type="button" class="btn btn-primary btn-block" onclick="sendVerificationCode()">获取邮箱验证码</button>
+                        </div>
+
+                        <!--<hr/>-->
+                        <!--<input type="text" name="verify" id="verify" value="" required placeholder="验证码"  class="form-control">-->
+                        <!--<input type="submit" value="注册" onclick="operation_confirmation()" class="btn btn-primary btn-block">-->
+
+                        <br>
+                        <a href="{% url 'login' %}" class="btn btn-default btn-block">返回登录</a>
+
+
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

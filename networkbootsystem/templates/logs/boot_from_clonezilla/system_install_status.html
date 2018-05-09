@@ -1,0 +1,471 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}显示安装列表{% endblock %}
+
+{% block right %}    
+<script type="text/javascript">  
+
+refreshInstallStatus();
+
+showSambaNetspeed();
+
+setInterval(function() {
+    refreshInstallStatus();
+    showSambaNetspeed();
+}, 6000);//6秒后执行
+
+    
+//请求函数的ajax
+function refreshInstallStatus() { 
+    $.ajax({
+        url: '/logs/system_install_status_json',
+        type: 'GET',
+        dataType: 'json',
+        timeout: 3000,
+        cache: false,
+//        beforeSend: LoadFunction, //加载执行方法
+//        error: erryFunction,  //错误执行方法
+        success: succFunction //成功执行方法
+    })
+
+    function LoadFunction() {
+        $("#install_status").html('');
+    }
+    function erryFunction() {
+        alert("获取进度日志错误！");
+    }
+
+    function succFunction(install_list_json) {
+        var json = eval(install_list_json); //数组
+//                var install_list_json = "";
+        var install_list_json = '\
+        <table class="table table-hover">\
+            <tread>\
+                <tr>\
+                    <th align="center">MAC地址(点击显示获取日志)</th>\
+                    <th align="center">获取时间</th>\
+                    <th align="center">开始时间</th>\
+                    <th align="center">完成时间</th>\
+                    <th align="center">安装时长</th>\
+                    <th align="center">进度状态</th>\
+                </tr>\
+            </tread>\
+            <tbody>';
+        $.each(json, function (index, object) {
+            //循环获取数据
+//                    alert('数据编号：' + index);
+
+            var mac = object.fields.mac;
+            var get_time = object.fields.get_time;
+            var get_time = new Date(get_time).toLocaleString();
+            var start_time = object.fields.start_time;
+            var start_time = new Date(start_time).toLocaleString();
+            var complete_time = object.fields.complete_time;
+            var complete_time = new Date(complete_time).toLocaleString();
+            var process_time = object.fields.process_time;
+            var status = object.fields.status;
+//                    alert(status)
+            if (status=='-1')
+                {
+                    status='未获取';
+                    tr_bg='#FFC1E0';
+                    start_time="";
+                    complete_time="";
+
+                }
+            else if (status=='0')
+                {
+                    status='进行中';
+                    tr_bg='#96FED1';
+                    complete_time="";
+                }
+            else if (status=='1')
+                {
+                    status='已完成';
+                    tr_bg='#ACD6FF';
+                }
+            else
+                {
+                    status='超时异常';
+                    tr_bg='#FF9797';
+                    start_time="";
+                    complete_time="";
+                }
+//                    alert(tr_bg)
+//                    alert(Date(start_time).toLocaleString());
+//                    alert(start_time);
+            install_list_json += '<tr style="text-align:center;background:' + tr_bg + '">' +
+//                '<td><a href="javascrpt:void(0)" style="font-weight:bold; font-size:13px;" onclick="showInstallLog(\'b0:83:fe:b2:42:14\')">' + mac + '</a></td>' +
+                '<td><a href="javascrpt:void(0)" style="font-weight:bold; font-size:13px;" onclick="showInstallLog(\'' + mac + '\')">' + mac + '</a></td>' +
+
+                '<td>' + get_time + '</td>' +
+                '<td>' + start_time + '</td>' +
+                '<td>' + complete_time + '</td>' +
+                '<td>' + process_time + '</td>' +
+                '<td>' + status + 
+
+                '</td>' +
+                '</tr>'
+        });
+
+        install_list_json += "\
+            </tbody>\
+        </table>";
+
+        $("#install_status").html('');
+        $("#install_status").html(install_list_json);
+
+    } 
+}
+
+    
+function showInstallLog(mac) { 
+    $.ajax({
+        url: '/logs/system_install_status_info?mac=' + mac,
+        type: 'GET',
+        dataType: 'json',
+        timeout: 1000,
+        cache: false,
+//        beforeSend: LoadFunction, //加载执行方法
+        error: erryFunction,  //错误执行方法
+        success: succFunction //成功执行方法
+    })
+//    alert(url)
+    function LoadFunction() {
+        $("#show_install_log").html('');
+    }
+    function erryFunction() {
+        alert("显示安装日志错误！");
+    }
+    function succFunction(recent_install_info) {
+//        alert(recent_install_info);
+        var json = eval(recent_install_info); //数组
+//                var install_list_json = "";
+        var install_info = '\
+        <table class="table table-hover">\
+            <tread>\
+                <tr>\
+                    <th align="center">获取时间</th>\
+                    <th align="center">MAC地址</th>\
+                    <th align="center">IP地址</th>\
+                    <th align="center">服务代码</th>\
+                    <th align="center">获取镜像</th>\
+                    <th align="center">硬盘</th>\
+                    <th align="center">获取HTTP</th>\
+                    <th align="center">获取Samba</th>\
+                    <th align="center">是否获取</th>\
+                    <th align="center">获取方式</th>\
+                </tr>\
+            </tread>\
+            <tbody>';
+        $.each(json, function (index, object) {
+            //循环获取数据
+//                    alert('数据编号：' + index);
+
+            var updated = object.fields.updated;
+            var updated = new Date(updated).toLocaleString();
+            var mac = object.fields.mac;
+            var ip = object.fields.ip;
+            var serial = object.fields.serial;
+            var image = object.fields.image;
+            var disk_num = object.fields.disk_num;
+            var http_path = object.fields.http_path;
+            var samba_path = object.fields.samba_path;
+            var get_tag = object.fields.get_tag;
+//                    alert(status)
+            if (status="True")
+                {
+                    get_tag='√';
+
+                }           
+            else
+                {
+                    get_tag='×';
+                }
+            var get_way = object.fields.get_way;
+//            var start_time = new Date(start_time).toLocaleString();
+//                    alert(start_time);
+            install_info += '<tr style="text-align:center;">' +
+                '<td>' + updated + '</td>' +
+                '<td>' + mac + '</td>' +
+                '<td>' + ip + '</td>' +
+                '<td>' + serial + '</td>' +
+                '<td>' + image + '</td>' +
+                '<td>' + disk_num + '</td>' +
+                '<td>' + http_path + '</td>' +
+                '<td>' + samba_path + '</td>' +
+                '<td>' + get_tag + '</td>' +
+                '<td>' + get_way + '</td>' +
+                '</tr>'
+        });
+
+        install_info += "\
+            </tbody>\
+        </table>";
+//        alert(install_info)
+        $("#show_install_log").html('');
+        $("#show_install_log").html(install_info);
+        
+    }
+}
+
+
+function showSambaNetspeed() { 
+    $.ajax({
+        url: '/logs/show_netspeed',
+        type: 'GET',
+        dataType: 'json',
+        timeout: 3000,
+        cache: false,
+//        beforeSend: LoadFunction, //加载执行方法
+//         error: erryFunction,  //错误执行方法
+        success: succFunction //成功执行方法
+    });
+
+    function LoadFunction() {
+        $("#show_samba_netspeed").html('');
+    }
+    function erryFunction() {
+        alert("显示网络状态错误！");        
+    }
+    function succFunction(samba_netspeed) {
+        <!--alert(!samba_netspeed);-->
+    //    返回json值长度大于0
+        if (Object.keys(samba_netspeed).length > 0) {
+    //      alert('有数据');            
+            var json = eval(samba_netspeed); //数组
+
+            // var a='<div id="192_168_96_99" data-dimension="250" data-text="60%" data-info="New Clients" data-width="30" data-fontsize="38" data-percent="60" data-fgcolor="#7ea568" data-bgcolor="#eee" data-type="half" data-fill="#ddd"></div>';
+            var ip_name;
+            var net_out;
+            var net_out_str;
+            var net_percent_out;
+            var samba_netspeed_out = '';
+            var ip_name_id_out;
+            var ip_name_out;
+            var net_in;
+            var net_in_str;
+            var net_percent_in;
+            var samba_netspeed_in = '';
+            var ip_name_id_in;
+            var ip_name_in;
+
+            $.each(json, function (Name, Value) {            
+                //循环获取数据
+               // alert('IP：' + object);
+    //            alert(json[object])
+    //            samba_netspeed += 'IP:' + object + '   Net:' + json[object] + '<br>'
+                ip_name = Name.replace(/\./g, '_');
+               // alert(ip_name)
+
+                // 出口网速显示
+                net_out = Value.net_out;
+                ip_name_out = ip_name + '_out';
+                // alert(ip_name_out);
+                if (net_out<1000){
+                    net_out_str = net_out.toString() + 'KB/s';
+                }
+                else if (net_out<1000000){
+                    net_out_str = (net_out / 1000).toFixed(2).toString() + 'MB/s';
+                }
+                else{
+                    net_out_str = (net_out / 1000000).toFixed(2).toString() + 'GB/s';
+                }
+                // alert(net_out_str);
+                net_percent_out = Value.net_out / 1333;               //单位换算转换为百分比
+                samba_netspeed_out += '<div id="' + ip_name_out + '" data-dimension="250" data-text="' + net_out_str + '" data-info="' + Name + '" data-width="30" data-fontsize="30" data-percent="' + net_percent_out + '" data-fgcolor="#0066CC" data-bgcolor="#eee" data-type="half" data-fill="#ddd" style="float:left;"></div>'
+
+                net_in = Value.net_in;
+                ip_name_in = ip_name + '_in';
+                if (net_in<1000){
+                    net_in_str = net_in.toString() + 'KB/s';
+                }
+                else if (net_in<1000000){
+                    net_in_str = (net_in / 1000).toFixed(2).toString() + 'MB/s';
+                }
+                else{
+                    net_in_str = (net_in / 1000000).toFixed(2).toString() + 'GB/s';
+                }
+
+                net_percent_in = Value.net_in / 1333;               //单位换算转换为百分比
+                samba_netspeed_in += '<div id="' + ip_name_in + '" data-dimension="250" data-text="' + net_in_str + '" data-info="' + Name + '" data-width="30" data-fontsize="30" data-percent="' + net_percent_in + '" data-fgcolor="#548C00" data-bgcolor="#eee" data-type="half" data-fill="#ddd" style="float:left;"></div>'
+
+            });
+
+            // alert(samba_netspeed_out);
+            // alert(samba_netspeed_in);
+
+            $("#show_samba_netspeed_out").html(samba_netspeed_out);
+            $("#show_samba_netspeed_in").html(samba_netspeed_in);
+            // alert(json);
+            $.each(json, function (Name) {
+                ip_name = Name.replace(/\./g, '_');
+                ip_name_out = ip_name + '_out';
+                ip_name_id_out = '#' + ip_name_out;
+                // alert(ip_name_out);
+                $(ip_name_id_out).circliful();
+
+                ip_name_in = ip_name + '_in';
+                ip_name_id_in = '#' + ip_name_in;
+                // alert(ip_name_in);
+                $(ip_name_id_in).circliful();
+            });
+//            $('#192_168_96_66').circliful();
+//            $('#192_168_96_99').circliful();
+//            $('#192_168_96_166').circliful();
+            }
+        else {
+            $("#show_samba_netspeed_out").html('');
+            $("#show_samba_netspeed_in").html('');
+        }
+    } 
+}    
+
+    
+    
+ /*   
+function showGetSambaNetspeed(samba_ip, netspeed_url) { 
+    alert(samba_ip + netspeed_url)
+    $.ajax({
+        url: '/netspeed',
+        type: 'GET',
+        crossDomain:true,
+        dataType: 'jsonp',
+        timeout: 100000,
+        cache: false,
+//        beforeSend: LoadFunction, //加载执行方法
+        error: erryFunction,  //错误执行方法
+        success: succFunction //成功执行方法
+    })
+
+    function LoadFunction() {
+        $("#show_samba_netspeed1").html('');
+    }
+    function erryFunction() {
+        alert("error000");        
+    }
+    function succFunction(samba_netspeed) { 
+        alert(samba_netspeed);
+    } 
+}    
+function getSambaList() { 
+    $.ajax({
+        url: '/logs/samba_netspeed_json',
+        type: 'GET',
+        dataType: 'json',
+        timeout: 1000,
+        cache: false,
+        error: erryFunction,  //错误执行方法
+        success: succFunction //成功执行方法
+    })
+    function erryFunction() {
+        alert("error");
+    }
+    function succFunction(samba_netspeed_json) {
+        var json = eval(samba_netspeed_json); //数组
+
+        $.each(json, function (Object) {
+//            alert(Object + json[Object]);
+            samba_ip = Object;
+            netspeed_url = json[Object];
+            showGetSambaNetspeed(samba_ip, netspeed_url);
+        });
+        
+    }
+}
+*/    
+
+</script>    
+
+<style type="text/css">
+.circliful {
+	position: relative;
+}
+.circle-text, .circle-info, .circle-text-half, .circle-info-half {
+	width: 100%;
+	position: absolute;
+	text-align: center;
+	display: inline-block;
+}
+.circle-info, .circle-info-half {
+	color: #999;
+}
+.circliful .fa {
+	margin: -10px 3px 0 3px;
+	position: relative;
+	bottom: 4px;
+}
+</style>
+
+
+    <section class="content-header">
+        <h1>
+            显示最新10个任务
+            <small>
+
+            </small>
+        </h1>
+    </section>
+
+
+
+    <!-- Main content 表格内容-->
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <!-- /.box-header 表格数据-->
+                    <div class="box-header" id="show_install_log">任务列表</div>
+                    <div class="box-body table-responsive no-padding" >
+                        <!--显示最近的任务列表--><div id="install_status"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12">
+            <!-- AREA CHART -->
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Samba出口网速</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                        </div>
+                    </div>
+                    <div class="box-body chart-responsive">
+                        <div class="chart" id="show_samba_netspeed_out" style="height: 130px;"></div>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+            <!-- AREA CHART -->
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Samba入口网速</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                        </div>
+                    </div>
+                    <div class="box-body chart-responsive">
+                        <div class="chart" id="show_samba_netspeed_in" style="height: 130px;"></div>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
+        
+    </section>
+
+{% endblock %}

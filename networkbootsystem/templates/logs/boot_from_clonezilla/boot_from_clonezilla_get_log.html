@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}查询Clonezilla获取日志{% endblock %}
+
+{% block right %}
+
+<script type="text/javascript">
+
+function showBootAuto(mac) {
+    $.ajax({
+        url: '/logs/show_boot_auto_from_mac?mac=' + mac,
+        type: 'GET',
+        dataType: 'json',
+        timeout: 1000,
+        cache: false,
+//        beforeSend: LoadFunction, //加载执行方法
+        error: erryFunction,  //错误执行方法
+        success: succFunction //成功执行方法
+    })
+//    alert(url)
+    function LoadFunction() {
+        $("#show_boot_auto").html('');
+    }
+    function erryFunction() {
+        var boot_auto = '\
+        <div class="alert alert-info alert-dismissable fade in">\
+            <a href="#" class="close" data-dismiss="alert">\
+                &times;\
+            </a>\
+            <strong>提示！</strong>无 <strong>' + mac +
+        
+        ' </strong>相关信息记录。\
+        </div>'
+        $("#show_boot_auto").html('');
+        $("#show_boot_auto").html(boot_auto);
+    }
+    function succFunction(boot_auto) {
+//        alert(boot_auto);
+        var json = eval(boot_auto); //数组
+//                var install_list_json = "";
+        var boot_auto = '\
+        <table class="table table-striped">\
+            <tread>\
+                <tr>\
+                    <th align="center">功能操作</th>\
+                    <th align="center">启动名称</th>\
+                    <th align="center">MAC地址</th>\
+                    <th align="center">Clonezilla文件地址</th>\
+                    <th align="center">Samba镜像服务器</th>\
+                    <th align="center">镜像名称</th>\
+                    <th align="center">镜像加载路径</th>\
+                    <th align="center">恢复硬盘编号</th>\
+                    <th align="center">是否启用</th>\
+                    <th align="center">更新时间</th>\
+                </tr>\
+            </tread>\
+            <tbody>';
+        $.each(json, function (index, object) {
+            var op_id = object.fields.op_id;
+            var name = object.fields.name;
+            var mac = object.fields.mac;
+            var http_server = object.fields.http_server;
+            var samba_server = object.fields.samba_server;
+            var image_file = object.fields.image_file;
+            var image_path = object.fields.image_path;
+            var restore_disk = object.fields.restore_disk;            
+            var available = object.fields.available;
+            var updated = object.fields.updated;
+            var updated = new Date(updated).toLocaleString();  
+            if (available="True")
+                {
+                    available_style='<span class="glyphicon glyphicon-ok"></span>';
+
+                }
+            else
+                {
+                    available_style='<span class="glyphicon glyphicon-remove"></span>';
+                }
+            boot_auto += '<tr style="text-align:center;">' +
+                '<td>' +   
+                    //'<a href="{% url "boot_from_clonezilla_auto_update" %}?update_name=' + name + '"  target="_top" class="btn btn-primary btn-circle"><i class="glyphicon glyphicon-list"></i></a>' + '&nbsp' +
+                    //'<a onclick=\'delcfm("{% url "boot_from_clonezilla_auto_delete" %}?delete_name=' + name + '")\' target="_top" class="btn btn-warning btn-circle"><i class="glyphicon glyphicon-remove"></i></a>' +
+                    '<a href="{% url "boot_from_clonezilla_auto_update" %}?update_id=' + op_id + '"  target="_top" class="btn btn-primary btn-circle"><i class="glyphicon glyphicon-list"></i></a>' + '&nbsp' +
+                    '<a onclick=\'delcfm("{% url "boot_from_clonezilla_auto_delete" %}?delete_id=' + op_id + '")\' target="_top" class="btn btn-warning btn-circle"><i class="glyphicon glyphicon-remove"></i></a>' +
+
+                '</td>' +
+                '<td>' + name + '</td>' +
+                '<td>' + mac + '</td>' +
+                '<td>' + http_server + '</td>' +
+                '<td>' + samba_server + '</td>' +
+                '<td>' + image_file + '</td>' +
+                '<td>' + image_path + '</td>' +
+                '<td>' + restore_disk + '</td>' +
+                '<td>' + available_style + '</td>' +
+                '<td>' + updated + '</td>' +
+                '</tr>'
+        });
+
+        boot_auto += "\
+            </tbody>\
+        </table>";
+//        alert(boot_auto)
+        $("#show_boot_auto").html('');
+        $("#show_boot_auto").html(boot_auto);
+
+    }
+}
+
+</script>
+
+
+    <section class="content-header">
+        <h1>
+            PXE获取日志
+            <small>
+                只显示最新的20条
+            </small>
+        </h1>
+    </section>
+
+    <!-- Main content 表格内容-->
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <!-- /.box-header 表格数据-->
+                    <div class="box-header" id="show_boot_auto">详细日志</div>
+
+                    <div class="box-body table-responsive no-padding" >
+                        <table class="table table-hover">
+
+                            <tr>
+                                <th align="center">获取时间</th>
+                                <th align="center">MAC地址(点击显示获取详情)</th>
+                                <th align="center">IP地址</th>
+                                <th align="center">服务代码</th>
+                                <th align="center">获取镜像</th>
+                                <th align="center">硬盘</th>
+                                <th align="center">获取HTTP</th>
+                                <th align="center">获取Samba</th>
+                                <th align="center">是否获取</th>
+                                <th align="center">获取方式</th>
+                            </tr>
+
+                            {% for log in clonezilla_get_log %}
+                            <tr
+                                {% if log.get_tag is True %}
+                                    style="background-color:#96FED1;"
+                                {% endif %}
+                            >
+                                <td align="center">{{ log.updated }}</td>
+                                <td align="center">
+                                    <a href="javascrpt:void(0)" style="font-weight:bold; font-size:13px;" onclick="showBootAuto('{{ log.mac }}')">{{ log.mac }}</a>
+                                    <!--                    {{ log.mac }}-->
+                                </td>
+                                <td align="center">{{ log.ip }}</td>
+                                <td align="center">{{ log.serial }}</td>
+                                <td align="center">{{ log.image }}</td>
+                                <td align="center">{{ log.disk_num }}</td>
+                                <td>{{ log.http_path }}</td>
+                                <td>{{ log.samba_path }}</td>
+                                {% if log.get_tag is True %}
+                                <td align="center">Y(True)</td>
+                                {% else %}
+                                <td align="center">N(False)</td>
+                                {% endif %}
+                                <td align="center">{{ log.get_way }}</td>
+                            {% endfor %}
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}

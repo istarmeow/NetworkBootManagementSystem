@@ -1,0 +1,64 @@
+@charset "UTF-8";
+
+/*Bootstrap 表格内容垂直居中的问题*/
+tr {
+    vertical-align: middle !important;
+}
+
+/*表格标题字体大小*/
+.table th{
+    font-size:14px;
+    vertical-align: middle !important;/*表格垂直居中*/;
+    text-align: center;
+}
+
+tbody td{
+	cursor: pointer;
+	vertical-align: middle !important;/*表格垂直居中*/
+}
+
+/*圆形按钮*/
+.btn-circle {
+  width: 22px;
+  height: 22px;
+  text-align: center;
+  padding: 1px 0;
+  font-size: 12px;
+  line-height: 1.428571429;
+  border-radius: 15px;
+}
+
+/*表格数据字体大小*/
+tbody {
+    font-size:12px;
+
+}
+
+
+/*公共*/
+a {
+	color: #555;
+	cursor: pointer;
+	text-decoration: none;
+}
+a:hover {
+	color: #3399CC;
+	text-decoration: none;
+}
+li {
+	display: list-item;
+	list-style: none;
+	text-align: -webkit-match-parent;
+}
+
+button.disabled {
+	cursor: no-drop;
+}
+body, input, button, textarea, select {
+	font-family: "Microsoft YaHei", "微软雅黑", "Lantinghei SC", "Open Sans", Arial, "Hiragino Sans GB", "STHeiti", "WenQuanYi Micro Hei", SimSun, sans-serif;
+}
+/*定义字体*/
+@font-face {
+	font-family: 'TaurusNormal';
+	/*src: url('../fonts/TaurusNormal.woff') format('woff'), url('../fonts/TaurusNormal.ttf') format('truetype'), url('../fonts/TaurusNormal.svg') format('svg');*/
+}

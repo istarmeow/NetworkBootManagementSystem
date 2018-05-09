@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}更新{% endblock %}
+
+{% block right %}
+{% if update_complete is False %}
+    <form method="post" action="{% url 'boot_from_clonezilla_info_update' %}">
+        <p>
+            <label>启动名称：</label>
+            <input type="text" name="name" value="{{ old_info.name }}" class="form_old_data">
+        </p>
+        <p>
+            <label>MAC地址：</label>
+            <input type="text" name="mac" value="{{ old_info.mac }}" class="form_old_data" readonly>
+        </p>
+        <p>
+            <label>Clonezilla文件地址：</label>
+            <!--<input type="text" name="http_svr" value="{{ old_info.http_svr }}" class="form_old_data">-->
+            <select name="http_svr">
+                {% for http_server in choose_http_server %}
+                    <option value ="{{ http_server.server_name }}">{{ http_server.server_name }}</option>
+                {% endfor %}
+            </select>
+        </p>
+        <!--<p>-->
+            <!--<label>服务器用户名：</label>-->
+            <!--<input type="text" name="user_name" value="{{ old_info.user_name }}" class="form_old_data">-->
+        <!--</p>-->
+        <!--<p>-->
+            <!--<label>服务器登录密码：</label>-->
+            <!--<input type="text" name="user_password" value="{{ old_info.user_password  }}" class="form_old_data">-->
+        <!--</p>-->
+        <!--<p>-->
+            <!--<label>镜像存储服务器：</label>-->
+            <!--<input type="text" name="image_server_path" value="{{ old_info.image_server_path }}" class="form_old_data">-->
+        <!--</p>-->
+        <p>
+            <label>Samba服务器：</label>
+            <select name="samba_svr">
+                {% for samba_server in choose_samba_server %}
+                    <option value ="{{ samba_server.server_name }}">{{ samba_server.server_name }}</option>
+                {% endfor %}
+            </select>
+        </p>
+        <p>
+            <label>镜像存储路径：</label>
+            <input type="text" name="image_path" value="{{ old_info.image_path }}" class="form_old_data">
+        </p>
+        <p>
+            <label>镜像名称：</label>
+            <!--<input type="text" name="image_name" value="{{ old_info.image_name }}" class="form_old_data">-->
+            <select name="image_name">
+                {% for image_name in choose_image_name %}
+                    <option value ="{{ image_name.image_name }}"
+                        {% if old_info.image_name == image_name.image_name %}
+                            selected="selected"
+                        {% endif %}
+                    >{{ image_name.image_name }}</option>
+                {% endfor %}
+            </select>
+
+
+        </p>
+        <p>
+            <label>恢复硬盘编号：</label>
+            <input type="text" name="disk_num" value="{{ old_info.disk_num }}" class="form_old_data">
+        </p>
+        <p>
+            <label>是否启用：</label>
+            <input type="radio" name="available"
+                   {% if old_info.available is True %}
+                    checked="checked"
+                   {% endif %}
+                   value="y"/>是
+            <input type="radio" name="available"
+                   {% if old_info.available is False %}
+                    checked="checked"
+                   {% endif %}
+                   value="n"/>否
+        </p>
+        <p>
+            <label>说明：</label>
+            <input name="explain" value="{{ old_info.explain }}" class="form_old_data" style="width:545px; height:60px; margin-top: 20px" >
+        </p>
+        <input type="submit" value="更新Clonezilla配置信息" class="submit_button" onclick="operation_confirmation()">
+        <a href="{% url 'boot_from_clonezilla_info_query_operation' %}" class="link_button">返回查询页</a>
+
+
+    </form>
+{% else %}
+    {% if update_flag is True %}
+        <p>
+            更新完成！
+        </p>
+    {% else %}
+        <p>
+            未更新！
+        </p>
+    {% endif %}
+    <br><br>
+    <p>
+        <a href="{% url 'boot_from_clonezilla_info_query_operation' %}" class="link_button">返回查询页</a>
+    </p>
+{% endif %}
+{% endblock %}

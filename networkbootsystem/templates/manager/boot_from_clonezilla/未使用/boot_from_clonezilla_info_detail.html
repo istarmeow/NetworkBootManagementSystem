@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}详情页{% endblock %}
+
+{% block right %}
+<br>
+启动名称：
+{{ info_detail.name }}
+<br>
+MAC:
+{{ info_detail.mac }}
+<br>
+Clonezilla文件地址：{{ info_detail.http_svr }}
+<br>
+Samba服务器：{{ info_detail.image_server_path }}   用户名：{{ info_detail.user_name }}   密码：{{ info_detail.user_password }}
+<br>
+镜像名称：{{ info_detail.image_name }}    加载路径：{{ info_detail.image_path }}   {{ info_detail.disk_num }}
+<br>
+是否可用：{{ info_detail.available }}
+<br>
+说明：{{ info_detail.explain }}
+
+<br><br>
+<p><a href="{% url 'boot_from_clonezilla_info_query_operation' %}" class="link_button">返回查询页</a> </p>
+
+{% endblock %}

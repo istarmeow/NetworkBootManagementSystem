@@ -1,0 +1,4 @@
+#!ipxe
+
+initrd {{ http_svr }}/{{ iso_file }}
+chain {{ http_svr }}/memdisk iso raw

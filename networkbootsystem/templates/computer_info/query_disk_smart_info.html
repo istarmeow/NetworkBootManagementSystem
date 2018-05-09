@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}硬盘SMART信息查询{% endblock %}
+
+{% block right %}
+
+    <section class="content-header">
+        <h1>
+            硬盘S.M.A.R.T.信息监测
+            <small>
+                {% if can_find is True %}
+                查询到 {{ find_num }} 条结果！每页最多显示时16条。
+                {% else %}
+                无查询结果！
+                {% endif %}
+            </small>
+        </h1>
+    </section>
+
+    <!-- Main content 表格内容-->
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <form method="post" action="{% url 'query_disk_smart_info' %}">
+                    <!--表格头部，有标题和搜索-->
+                        <div class="box-header">
+                            <h3 class="box-title">系统镜像</h3>
+                            <span>
+                                <a href="/static/disksmart/硬盘SMART检测.exe" download="硬盘SMART检测.exe" class="link_button btn btn-xs btn-primary">下载硬盘S.M.A.R.T.检测工具</a></span>
+                            <!--标题及搜索框-->
+                            <div class="box-tools">
+                                <div class="input-group input-group-sm" style="width: 150px;">
+                                    <input type="text" name="keyword" value="{{ keyword }}" class="form-control pull-right" placeholder="模糊搜索">
+                                    <div class="input-group-btn">
+                                        <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.box-header 表格数据-->
+                        <div class="box-body table-responsive no-padding">
+                            <table class="table table-hover">
+                                {% if can_find is True %}
+                                <tr>
+                                    <!--<th>功能操作</th>-->
+                                    <th>硬盘序列号</th>
+                                    <th>硬盘名称</th>
+                                    <th>硬盘大小G</th>
+                                    <th>实际容量G</th>
+                                    <th>重定位扇区数05</th>
+                                    <th>通电时间（小时）09</th>
+                                    <th>通电次数0C</th>
+                                    <th>等待重映射扇区数C5</th>
+                                    <th>LBA写入总数F1</th>
+                                    <th>IP地址</th>
+                                    <th>MAC地址</th>
+                                    <!--<th>SMART获取</th>-->
+                                    <th>最新更新</th>
+                                </tr>
+                                {% for disk_smart_info in disk_smart_info_list %}
+                                <tr
+
+                                    {% if disk_smart_info.reallocated|floatformat:0 > 0|floatformat:0 or disk_smart_info.currentpending|floatformat:0 > 0|floatformat:0 %}
+                                        style="background-color:#ff7575;"
+                                    {% elif disk_smart_info.smartinfo is False %}
+                                        style="background-color:#66B3FF;"
+                                    {% endif %}
+                                >
+                                    <!--<td align="center">-->
+                                        <!--无-->
+                                    <!--</td>-->
+                                    <td >{{ disk_smart_info.serial }}</td>
+                                    <td>{{ disk_smart_info.caption }}</td>
+                                    <td align="center">{{ disk_smart_info.size }} GB</td>
+                                    <td align="center">{{ disk_smart_info.capacity }} GB</td>
+                                    <td align="center">{{ disk_smart_info.reallocated }}</td>
+                                    <td align="center">{{ disk_smart_info.poweron }} {% if disk_smart_info.poweron != "" %}h{% endif %}</td>
+                                    <td align="center">{{ disk_smart_info.powercycle }}</td>
+                                    <td align="center">{{ disk_smart_info.currentpending }}</td>
+                                    <td align="center">{{ disk_smart_info.totalwritten }}</td>
+                                    <td align="center">{{ disk_smart_info.ip }}</td>
+                                    <td align="center">{{ disk_smart_info.mac }}</td>
+
+                                    <!--{% if disk_smart_info.smartinfo is True %}-->
+                                        <!--<td align="center"><span class="glyphicon glyphicon-ok"></span></td>-->
+                                    <!--{% else %}-->
+                                        <!--<td align="center"><span class="glyphicon glyphicon-remove"></span></td>-->
+                                    <!--{% endif %}-->
+                                    <td align="center">{{ disk_smart_info.smarttime }}</td>
+                                </tr>
+                                {% endfor %}
+                                {% endif %}
+                            </table>
+                        </div>
+                        <!-- 表格底部显示状态 -->
+                        <div class="box-footer">
+
+                        {% if show_pages is True %}
+
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination">
+                                        <li>
+                                            <a href="?page=1" aria-label="">
+                                                <span aria-hidden="true">首页</span>
+                                            </a>
+                                        </li>
+                                    {% if boot_from_clonezilla_list.has_previous %}
+                                        <li>
+                                          <a href="?page={{ disk_smart_info_list.previous_page_number }}" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                          </a>
+                                        </li>
+                                    {% endif %}
+
+                                    {%  for pg in disk_smart_info_list.paginator.page_range %}
+                                        {% if disk_smart_info_list.number == pg %}
+                                            <li class="active"><a href="?page={{ pg }}">{{ pg }}</a> </li>
+                                        {% else %}
+                                            <li><a href="?page={{ pg }}">{{ pg }}</a> </li>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    {% if disk_smart_info_list.has_next %}
+                                        <li>
+                                            <a href="?page={{ disk_smart_info_list.next_page_number }}" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                        <li>
+                                            <a href="?page={{ disk_smart_info_list.paginator.num_pages }}" aria-label="">
+                                                <span aria-hidden="true">尾页</span>
+                                            </a>
+                                        </li>
+                                </ul>
+                            </nav>
+
+
+                            <div class="pagination">
+                                <span class="step-links">
+                                    {% if disk_smart_info_list.has_previous %}
+                                        <a href="?page={{ disk_smart_info_list.previous_page_number }}"><<<</a>
+                                    {% endif %}
+
+                                    <span class="current">
+                                        第 {{ disk_smart_info_list.number }} 页，总共 {{ disk_smart_info_list.paginator.num_pages }} 页
+                                    </span>
+
+                                    {% if boot_from_clonezilla_list.has_next %}
+                                        <a href="?page={{ disk_smart_info_list.next_page_number }}">>>></a>
+                                    {% endif %}
+                                </span>
+                            </div>
+
+                        {% endif %}
+
+                        <br>
+                        <br>
+                        <p>{{ delete_status }}</p>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}

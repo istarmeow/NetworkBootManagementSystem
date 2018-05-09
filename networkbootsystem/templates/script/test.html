@@ -1,0 +1,5 @@
+#!ipxe
+kernel http://192.168.96.25/clonezilla/live/vmlinuz
+initrd http://192.168.96.25/clonezilla/live/initrd.img
+imgargs vmlinuz boot=live union=overlay fetch=http://192.168.96.25/clonezilla/live/filesystem.squashfs username=user hostname=wily config quiet components noswap edd=on nomodeset nodmraid noeject locales=en_US.UTF-8 keyboard-layouts=NONE ocs_prerun1="dhclient -v eth0" ocs_prerun2="sleep 2" ocs_prerun3="mount -t cifs -o user=imagman,password=duoyi //192.168.96.66/images /home/partimag" ocs_live_run="ocs-live-restore" ocs_live_extra_param="-g auto -scr -batch -p reboot restoredisk Dell3030-Ubuntu sda" ocs_live_batch=yes vga=788 ip= net.ifnames=0 splash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1
+boot

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Post方法显示iso对应{% endblock %}
+
+
+{% block right %}
+    <form action="{% url 'query_boot_from_iso_info_post' %}" method="post" enctype="multipart/form-data">
+        <select name="select">
+            <option value ="all">全部</option>
+            <option value ="name">启动名称</option>
+            <option value ="mac">MAC地址</option>
+            <option value="iso_name">ISO名称</option>
+            <option value="explain">说明</option>
+        </select>
+        <label>关键字:</label>
+        <input name="keyword">
+        <input type="submit" value="查询" style="margin-bottom:20px;">
+    </form>
+
+    <p style="margin:0 0 30px 0">{{ searchName }}</p>
+    <p style="margin:0 0 30px 0">{{ searchResult }}</p>
+    <table border="1"  cellpadding="0" cellspacing="0" width="100%">
+        <!--style="text-align: center;"   -->
+        <tread>
+            <tr style="height:40px;">
+                <th align="center">启动名</th>
+                <th align="center">MAC地址</th>
+                <th align="center">加载地址</th>
+                <th align="center">镜像名</th>
+                <th align="center">是否启用</th>
+                <th align="center">更新时间</th>
+            </tr>
+        </tread>
+        <tbody>
+            {% for boot_iso in boot_iso_list %}
+                <tr style="height:30px;">
+                    <td>{{ boot_iso.name }}</td>
+                    <td align="center">{{ boot_iso.mac }}</td>
+                    <td>{{ boot_iso.iso_svr }}</td>
+                    <td>{{ boot_iso.iso_name }}</td>
+                    {% if boot_iso.available == True %}
+                        <td align="center">Y</td>
+                    {% else %}
+                        <td align="center">N</td>
+                    {% endif %}
+                    <td align="center">{{ boot_iso.updated }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

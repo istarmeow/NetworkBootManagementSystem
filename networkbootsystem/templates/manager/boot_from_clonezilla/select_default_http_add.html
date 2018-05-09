@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}Http服务器增加{% endblock %}
+
+{% block right %}
+    <section class="content-header">
+        <h1>
+            Http服务器增加
+            <small>
+
+            </small>
+        </h1>
+    </section>
+
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">增加新项</h3>
+                    </div>
+                    <div class="box-body">
+                        <form method="post" action="{% url 'select_default_http_add' %}">
+                            <p>
+                                <!--不显示的唯一id，用于提交表单后对比前后是否变化-->
+                                <input type="text" name="id" value="{{ add_http_server.id }}" readonly style="display:none">
+                            </p>
+                            <p>
+                                <label>http服务器名称：</label>
+                                <input type="text" name="http_name" value="{{ add_http_server.http_name }}" required placeholder="输入这项的名称，便于识别！" class="form-control" onchange="TextVerifyInput(this.value)">
+                            </p>
+                            <p>
+                                <label>http服务器IP：</label>
+                                <input type="text" name="http_ip" value="{{ add_http_server.http_ip }}" required placeholder="IP" class="form-control">
+                            </p>
+                            <p>
+                                <label>Http服务器端口：</label>
+                                <input type="text" name="http_port" value="{{ add_http_server.http_port }}" placeholder="" class="form-control">
+                            </p>
+                            <p>
+                                <label>文件目录：</label>
+                                <input type="text" name="http_folder" value="{{ add_http_server.http_folder }}" placeholder="" class="form-control">
+                            </p>
+                            <p>
+                                <label>选择可用：</label>
+                                <input type="radio" name="available" {% if add_http_server.available is True %} checked="checked" {% endif %} value="y"/>是
+                                <input type="radio" name="available" {% if add_http_server.available is False %} checked="checked" {% endif %} value="n"/>否
+                            </p>
+                            <p>
+                                <label>是否默认：</label>
+                                <input type="radio" name="default" {% if add_http_server.default is True %} checked="checked" {% endif %} value="y"/>是
+                                <input type="radio" name="default" {% if add_http_server.default is False %} checked="checked" {% endif %} value="n"/>否&nbsp&nbsp如果选中是，则其他Http将取消默认
+                            </p>
+                            <p>
+                                <label>说明：</label>
+                                <textarea name="explain" value="{{ add_http_server.explain }}" rows="3"  class="form-control">{{ add_http_server.explain }}</textarea>
+
+                            </p>
+                            <input type="submit" value="增加Http信息" onclick="operation_confirmation()" class="btn btn-success">
+                            <a href="{% url 'select_default_http' %}" class="btn btn-default">返回查询页</a>
+
+
+                        </form>
+                        <br>
+                        <br>
+                        <p>{{ add_status }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

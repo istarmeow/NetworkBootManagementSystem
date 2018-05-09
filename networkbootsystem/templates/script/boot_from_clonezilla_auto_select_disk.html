@@ -1,0 +1,4 @@
+#!ipxe
+kernel {{ http_svr }}/clonezilla/live/vmlinuz initrd=initrd.img boot=live union=overlay fetch={{ http_svr }}/clonezilla/live/v2.autodisk.filesystem.squashfs username=user config components quiet noswap edd=on nomodeset noeject locales=en_US.UTF-8 keyboard-layouts=NONE ocs_prerun1="dhclient -v eth0" ocs_prerun2="sleep 2" ocs_prerun3="LC_ALL=C mount -t cifs  -o user={{ user_name }},vers=2.1,password={{ user_password }} {{ image_server_path }}  {{ image_path }}" ocs_live_run="ep-ocs-sr -g auto -e1 auto -e2 -nogui -batch -r -j2 -o0 -o1 -scr -p reboot restoredisk {{ image_name }}" ocs_live_extra_param="" ocs_live_batch="yes" vga=791 ip= net.ifnames=0  nosplash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1
+initrd {{ http_svr }}/clonezilla/live/initrd.img
+boot

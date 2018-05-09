@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}主页{% endblock %}
+
+{% block right %}
+
+    <section class="content-header">
+        <h1>
+            {{ request.session.session_name }} 
+            <small>
+                欢迎访问系统！
+            </small>
+        </h1>
+    </section>
+
+    <!-- Main content 表格内容-->
+    <section class="content">
+        <div class="row">
+
+            <div class="col-md-8">
+                <div class="box box-solid">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">介绍</h3>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+                            <ol class="carousel-indicators">
+                                <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+                                <li data-target="#carousel-example-generic" data-slide-to="1" class=""></li>
+                                <li data-target="#carousel-example-generic" data-slide-to="2" class=""></li>
+                            </ol>
+                            <div class="carousel-inner">
+                                <div class="item active">
+                                    <img src="https://gss3.bdstatic.com/7Po3dSag_xI4khGkpoWK1HF6hhy/baike/c0%3Dbaike80%2C5%2C5%2C80%2C26/sign=499a86caff1f4134f43a0d2c4476feaf/b999a9014c086e06f211246200087bf40ad1cb5a.jpg" alt="First slide">
+
+                                    <div class="carousel-caption">
+                                    First Slide
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1509327844&di=a40cd6f859fadc54f85c082ef2d9b4ef&imgtype=jpg&er=1&src=http%3A%2F%2Fphotocdn.sohu.com%2F20150528%2Fmp16737872_1432783062203_1_th.jpeg" alt="Second slide">
+
+                                    <div class="carousel-caption">
+                                    Second Slide
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1508733150956&di=1fc60ef8d671c8c371edd1479bd7bd74&imgtype=0&src=http%3A%2F%2Fstatic.oschina.net%2Fuploads%2Fspace%2F2013%2F0728%2F153254_DkKq_818881.jpg" alt="Third slide">
+
+                                    <div class="carousel-caption">
+                                    Third Slide
+                                    </div>
+                                </div>
+                            </div>
+                            <a class="left carousel-control" href="#carousel-example-generic" data-slide="prev">
+                                <span class="fa fa-angle-left"></span>
+                            </a>
+                            <a class="right carousel-control" href="#carousel-example-generic" data-slide="next">
+                                <span class="fa fa-angle-right"></span>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+        
+        </div>
+    </section>
+
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}常用命令{% endblock %}
+
+{% block right %}
+<h1>ipxe编译</h1>
+<pre><code>root@debian8:/home/liurui/tftpboot/ipxe# cd src
+root@debian8:/home/liurui/ipxe/src# vim boot.ipxe
+root@debian8:/home/liurui/ipxe/src# make bin/undionly.kpxe EMBED=boot.ipxe
+root@debian8:/home/liurui/ipxe/src# cp bin/undionly.kpxe /home/liurui/tftpboot/
+</code></pre>
+
+<h1>pxe获取方式</h1>
+<pre><code>http://172.16.66.66:8899/pxesvr/boot_clonezilla?mac=08:00:27:75:96:9b&amp;ip=172.16.66.100&amp;serial=0
+</code></pre>
+
+<h1>加载Clonezilla文件</h1>
+<pre><code>#!ipxe
+
+kernel http://172.16.66.1:8088/clonezilla/live/vmlinuz
+initrd http://172.16.66.1:8088/clonezilla/live/initrd.img
+imgargs vmlinuz boot=live union=overlay fetch=http://172.16.66.1:8088/clonezilla/live/filesystem.squashfs username=user hostname=wily config quiet components noswap edd=on nomodeset nodmraid noeject locales=en_US.UTF-8 keyboard-layouts=NONE ocs_prerun1=&quot;dhclient -v eth0&quot; ocs_prerun2=&quot;sleep 2&quot; ocs_prerun3=&quot;mount -t cifs -o user=clonezilla,password=clonezilla //172.16.66.66/images /home/partimag&quot; ocs_live_run=&quot;ocs-live-restore&quot; ocs_live_extra_param=&quot;-g auto -scr -batch -p reboot restoredisk deepin15.4 sda&quot; ocs_live_batch=yes vga=788 ip= net.ifnames=0 splash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1
+boot
+</code></pre>
+
+<h3>-batch参数用于恢复前确认</h3>
+<p>假如我们制作的镜像是sda，但是如果想恢复到sdc上，需要进行手动选择，如果想全自动恢复到sdc上，可用通过加-batch实现，范列如下</p>
+<pre><code>ocs_live_extra_param=&quot;-g auto -scr -batch -p reboot restoredisk New-MR-Q7E-V.1-SSD-Win10_sda sdc&quot;
+ocs_live_extra_param=&quot;-g auto -scr -batch -p reboot restoredisk New-MR-Q7E-V.1-SSD-Win10_sda nvme0n1&quot;
+</code></pre>
+
+<h1>加载iso文件</h1>
+<pre><code>#!ipxe
+initrd http://172.16.66.1:8088/images/None
+chain http://172.16.66.1:8088/memdisk iso raw
+</code></pre>
+
+<h3>memdisk下载</h3>
+<p>从 https://www.kernel.org/pub/linux/utils/boot/syslinux/ 下载syslinux</p>
+<p>Windows上可以下载syslinux-6.03.zip解压，查找memdisk，然后复制到http服务器根目录上，用于启动iso支持 Linux可以下载syslinux-6.03.tar.gz解压，提取memdisk</p>
+
+<h1>获取clonezilla配置文件</h1>
+<p>chain http://192.168.96.96:8899/pxesvr/boot_clonezilla?mac=${net0/mac}&ip=${ip}&serial=${serial:uristring} || reboot</p>
+
+<p>
+    from networkbootsystem.models import ImageToComputerConfiguration
+
+</p>
+<a href="{% url 'macupper' %}" class="btn btn-primary">所有mac转换成大写《慎点》</a>
+
+{% endblock %}

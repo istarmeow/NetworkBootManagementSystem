@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}WOL{% endblock %}
+
+{% block right %}
+
+    <section class="content-header">
+        <h1>
+            网启开机
+            <small>
+                <b>{{ status }}</b>
+            </small>
+        </h1>
+    </section>
+
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">输入MAC地址进行启动</h3>
+                    </div>
+                    <div class="box-body">
+                        <form method="post" action="{% url 'wakeonlan' %}" class="form-horizontal" role="form">
+                            <div class="form-group">
+                                <label for="name" class="col-sm-1 control-label">MAC地址：</label>
+                                <div class="col-sm-11">
+                                    <input type="text" name="mac" id="name" value="" required placeholder="11:AA:22:BB:33:CC"  class="form-control" onchange="TextVerifyInput(this.value)">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-1 control-label"></label>
+                                <div class="col-sm-3">
+                                    <input type="submit" value="开个机吧"  class="btn btn-success">
+                                </div>
+                            </div>
+
+                        </form>
+
+                        <div class="box-body table-responsive no-padding">
+                        <table class="table table-hover">
+                            {% if can_find is True %}
+                            <tr>
+                                <th align="center">MAC地址</th>
+                                <th align="center">创建时间</th>
+                                <th align="center">最近开机</th>
+                                <th align="center">操作</th>
+                            </tr>
+
+
+                            {% for wakeonlan in wakeonlan_list %}
+                            <tr>
+                                <td align="center">{{ wakeonlan.mac }}</td>
+                                <td align="center">{{ wakeonlan.created }}</td>
+                                <td align="center">{{ wakeonlan.updated }}</td>
+                                <td align="center">
+                                    <a href="{% url 'wakeonlan' %}?mac={{ wakeonlan.mac }}" target="_top" class="btn btn-primary btn-xs">要不再开个机吧？</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% endif %}
+                        </table>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

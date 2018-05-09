@@ -1,0 +1,81 @@
+ {% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}镜像远程管理{% endblock %}
+
+{% block right %}
+<script type="text/javascript">
+    $(function () {
+    $("#choose_image").change(function(){
+        var image_name = $("#choose_image").val();
+        // alert(image_name);
+
+        $.ajax({
+            url: '/manage/show_image_info',
+            type: 'POST',
+            dataType: 'json',
+            timeout: 3000,
+            cache: false,
+            data: {
+                image_name: image_name
+            },
+            success: succFunction //成功执行方法
+        });
+
+        function succFunction(image_info) {
+            var json2cval = eval(image_info);
+            var image_date = json2cval.date;
+            var image_size = json2cval.size;
+            var show_image_info = '<b>镜像制作日期：' + image_date + '；镜像大小：' + image_size + 'GB</b>';
+            $("#show_image_info").html(show_image_info);
+        }
+        })
+    });
+
+</script>
+
+
+    <section class="content-header">
+        <h1>
+            镜像文件删除
+            <small>
+                
+            </small>
+        </h1>
+    </section>
+
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-info col-xs-5">
+                    <div class="box-header with-border">
+                      <h3 class="box-title" id="show_image_info">镜像远程删除</h3>
+                    </div>
+                    <div class="box-body">
+                        <form method="post" action="{% url 'image_remote_del' %}">
+
+                            <p>
+                                <label>镜像文件目录：<a href="http://192.168.96.99:8898/images" target="_blank" style="font-size: 10px;color:#BEBEBE; ">获取地址</a> </label>
+                                {% if can_choose is True %}
+                                <select name="image_name" size="30" class="form-control" id="choose_image">
+                                    {% for image_name in images_list %}
+                                        <option value ="{{ image_name }}" {% if image_name == default_recent_image_name %} selected {% endif %}>{{ image_name }}</option>
+                                    {% endfor %}
+                                </select>
+                                {% else %}
+                                <input type="text" name="image_name" value="" required placeholder="选择列表出错，请手动输入镜像文件名" class="form-control">
+                                {% endif %}
+                            </p>
+
+                            <input type="submit" value="删除镜像" onclick="operation_confirmation()" class="btn btn-warning">
+                            <a href="{% url 'image_file_query_operation' %}" class="btn btn-default">返回查询页</a>
+                            <a href="{% url 'image_remote_restore' %}" class="link_button btn btn-primary">还原已删除的镜像</a>
+                        </form>
+                        {{ status }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,114 @@
+/*
+.left li{
+	border-bottom:1px solid #fff;
+	height:45px;
+	line-height:48px;
+	隐藏溢出样式单词overflow:hidden
+	overflow: hidden;
+}
+*/
+
+/*鼠标移动到li标签上字体就变色
+.left li:hover a {
+    color: #000;
+}
+*/
+/*鼠标移动到li标签上背景变色
+.left li:hover {
+    background-color: #fff;
+}
+*/
+
+
+.left a{
+    font-size: 18px;
+    font-weight:400;
+    color:#ffc;
+   	text-decoration:none;
+    margin-left:20px;
+}
+
+html,body {
+    font-family: 微软雅黑;
+	background: #FFFFFF;
+}
+
+.input_p p{
+    margin-top:15px;
+}
+
+.submit_button{
+    margin-top:30px;
+}
+
+#top{
+	height: 80px;
+	width: 100%;
+	background: #417690;
+	color:#ffc;
+	text-align: left;
+	line-height:80px;
+}
+
+
+a.logo{
+    font-size: 40px;
+    color:#f5dd5d;
+    text-decoration:none;
+    vertical-align: middle;
+
+}
+
+#context{
+	height:778px;
+	width: 100%;
+	color: #fff;
+	text-align: left;
+	margin:0 auto;
+}
+
+.left{
+	float: left;
+	height:778px;
+	clear: both;
+	background:#79aec8;
+	width: 16%;
+	color: #fff;
+	/*限制div高度height后，内容多了溢出就显示滚动条*/
+	/*overflow-y: scroll;*/
+	overflow: auto;
+
+	/*overflow-x: scroll;*/
+}
+
+
+.right{
+    margin-top:20px;  /*定义到顶端距离*/
+	float: right;
+	height:750px;
+	width: 83.5%;
+	color: #666;
+	font-size:12px;
+    overflow-x: auto;
+}
+
+#footer{
+	background: #417690;
+	height:60px;
+	color: #fff;
+	text-align: left;
+	width: 100%;
+	line-height:60px;
+}
+
+.add_boot_image_form{
+    width:300px;
+    height:18px
+}
+
+input.form_data{
+    color: #3c3c3c;
+    width:500px;
+    height:26px;
+
+}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}查询PXE获取日志{% endblock %}
+
+
+
+{% block right %}
+
+{% for log in get_list %}
+{{ log.mac }} : {{ log.updated }}<br>
+{% endfor %}
+
+{% endblock %}
