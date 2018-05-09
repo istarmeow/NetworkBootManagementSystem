@@ -1,1 +1,3 @@
 # NetworkBootManagementSystem
+
+基于Django初学时实现的项目，后面看了很多书，才发现Django真的是太美妙了，这个项目也是够差的，不过也学习使用很多Python的基础知识。
